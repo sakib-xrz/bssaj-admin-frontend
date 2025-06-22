@@ -2,38 +2,34 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import {
   LayoutDashboard,
   Users,
-  Building2,
-  Calendar,
-  FileText,
-  CreditCard,
   UserCheck,
-  MessageSquare,
-  Settings,
-  Award,
-  Menu,
+  // Building2,
+  // Calendar,
+  // FileText,
+  // CreditCard,
+  // MessageSquare,
+  // Settings,
+  // Award,
 } from "lucide-react";
 
 const navigation = [
   { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Users", href: "/users", icon: Users },
   { name: "Members", href: "/members", icon: UserCheck },
-  { name: "Agencies", href: "/agencies", icon: Building2 },
-  { name: "Memberships", href: "/memberships", icon: CreditCard },
-  { name: "Events", href: "/events", icon: Calendar },
-  { name: "Blogs", href: "/blogs", icon: FileText },
-  { name: "News", href: "/news", icon: MessageSquare },
-  { name: "Certifications", href: "/certifications", icon: Award },
-  { name: "Settings", href: "/settings", icon: Settings },
+  // { name: "Agencies", href: "/agencies", icon: Building2 },
+  // { name: "Memberships", href: "/memberships", icon: CreditCard },
+  // { name: "Events", href: "/events", icon: Calendar },
+  // { name: "Blogs", href: "/blogs", icon: FileText },
+  // { name: "News", href: "/news", icon: MessageSquare },
+  // { name: "Certifications", href: "/certifications", icon: Award },
+  // { name: "Settings", href: "/settings", icon: Settings },
 ];
 
-function SidebarContent() {
+export function SidebarContent() {
   const pathname = usePathname();
 
   return (
@@ -69,30 +65,8 @@ function SidebarContent() {
 }
 
 export function Sidebar() {
-  const [open, setOpen] = useState(false);
-
   return (
     <>
-      {/* Mobile Hamburger Menu */}
-      <div className="lg:hidden">
-        <Sheet open={open} onOpenChange={setOpen}>
-          <SheetTrigger asChild>
-            <Button
-              variant="ghost"
-              size="icon"
-              className="fixed top-4 left-4 z-50 lg:hidden"
-            >
-              <Menu className="h-6 w-6" />
-              <span className="sr-only">Toggle navigation menu</span>
-            </Button>
-          </SheetTrigger>
-          <SheetContent side="left" className="p-0 w-64">
-            <SidebarContent />
-          </SheetContent>
-        </Sheet>
-      </div>
-
-      {/* Desktop Sidebar */}
       <div className="hidden lg:flex lg:flex-col lg:w-64 lg:bg-white lg:border-r lg:border-gray-200">
         <SidebarContent />
       </div>

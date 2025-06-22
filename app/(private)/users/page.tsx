@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/card";
 import { Plus, Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
 import { UserViewModal } from "./_components/user-view-modal";
-import { DeleteAlertDialog } from "@/components/shared/delete-alert-dialog";
+import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
 
@@ -118,13 +118,13 @@ export default function UsersPage() {
   return (
     <Container>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Users</h1>
             <p className="text-gray-600">Manage system users and their roles</p>
           </div>
           <Link href="/users/create">
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add User
             </Button>

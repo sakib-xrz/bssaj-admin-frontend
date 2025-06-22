@@ -86,14 +86,14 @@ export default function EditUserPage() {
   return (
     <Container>
       <div className="space-y-6">
-        <div className="flex flex-col items-center space-x-4">
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/users">
             <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Users
             </Button>
           </Link>
-          <div className="text-center">
+          <div className="sm:text-center">
             <h1 className="text-3xl font-bold text-gray-900">Edit User</h1>
             <p className="text-gray-600">
               Update user information and settings
