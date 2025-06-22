@@ -1,0 +1,145 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Colors */
+    --brand-primary: #003366;
+    --brand-secondary: #00aeef;
+
+    /* Light Theme - Based on Brand Colors */
+    --background: 0 0% 100%;
+    --foreground: 210 100% 20%; /* Dark navy based on primary */
+    --card: 0 0% 100%;
+    --card-foreground: 210 100% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 210 100% 20%;
+
+    /* Primary - Navy Blue (#003366) */
+    --primary: 210 100% 20%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Secondary - Light Blue (#00AEEF) */
+    --secondary: 195 100% 47%;
+    --secondary-foreground: 0 0% 100%;
+
+    /* Muted - Light navy tint */
+    --muted: 210 40% 98%;
+    --muted-foreground: 210 20% 45%;
+
+    /* Accent - Lighter version of secondary */
+    --accent: 195 100% 95%;
+    --accent-foreground: 210 100% 20%;
+
+    /* Destructive */
+    --destructive: 0 84.2% 60.2%;
+    --destructive-foreground: 0 0% 100%;
+
+    /* Border and Input - Light navy tint */
+    --border: 210 20% 90%;
+    --input: 210 20% 90%;
+
+    /* Ring - Secondary color for focus */
+    --ring: 195 100% 47%;
+
+    --radius: 0.5rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    /* Dark Theme - Inverted with brand color accents */
+    --background: 210 100% 4%; /* Very dark navy */
+    --foreground: 0 0% 98%;
+    --card: 210 50% 8%; /* Dark navy card */
+    --card-foreground: 0 0% 98%;
+    --popover: 210 50% 8%;
+    --popover-foreground: 0 0% 98%;
+
+    /* Primary - Lighter in dark mode */
+    --primary: 195 100% 47%; /* Use secondary color as primary in dark */
+    --primary-foreground: 210 100% 4%;
+
+    /* Secondary - Navy in dark mode */
+    --secondary: 210 50% 15%;
+    --secondary-foreground: 0 0% 98%;
+
+    /* Muted */
+    --muted: 210 50% 15%;
+    --muted-foreground: 210 20% 70%;
+
+    /* Accent */
+    --accent: 210 50% 15%;
+    --accent-foreground: 0 0% 98%;
+
+    /* Destructive */
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    /* Border and Input */
+    --border: 210 50% 15%;
+    --input: 210 50% 15%;
+
+    /* Ring - Keep secondary for focus */
+    --ring: 195 100% 47%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom brand color utilities */
+@layer utilities {
+  .bg-brand-primary {
+    background-color: var(--brand-primary);
+  }
+
+  .bg-brand-secondary {
+    background-color: var(--brand-secondary);
+  }
+
+  .text-brand-primary {
+    color: var(--brand-primary);
+  }
+
+  .text-brand-secondary {
+    color: var(--brand-secondary);
+  }
+
+  .border-brand-primary {
+    border-color: var(--brand-primary);
+  }
+
+  .border-brand-secondary {
+    border-color: var(--brand-secondary);
+  }
+}
