@@ -206,7 +206,7 @@ export default function MembersPage() {
   return (
     <Container>
       <div className="space-y-6">
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Members</h1>
             <p className="text-gray-600">
@@ -214,7 +214,7 @@ export default function MembersPage() {
             </p>
           </div>
           <Link href="/members/create">
-            <Button className="bg-primary hover:bg-primary/90">
+            <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
               <Plus className="w-4 h-4 mr-2" />
               Add Member
             </Button>
@@ -222,7 +222,7 @@ export default function MembersPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
           {[
             {
               label: "Total Members",
