@@ -203,7 +203,7 @@ export default function AgenciesPage() {
                               View Details
                             </DropdownMenuItem>
                             <DropdownMenuItem asChild>
-                              <Link href={`/admin/agencies/edit/${agency.id}`}>
+                              <Link href={`/agencies/edit/${agency.id}`}>
                                 <Edit className="mr-2 h-4 w-4" />
                                 Edit Agency
                               </Link>
