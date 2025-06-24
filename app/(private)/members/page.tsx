@@ -38,6 +38,8 @@ import {
   UserCheck,
   CheckCircle,
   Clock,
+  X,
+  Check,
 } from "lucide-react";
 import { MemberViewModal } from "./_components/member-view-modal";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
@@ -45,7 +47,7 @@ import Container from "@/components/shared/container";
 import { format } from "date-fns";
 
 // Updated mock data with new schema
-const members = [
+const mockMembers = [
   {
     id: "1",
     user_id: "1",
@@ -111,7 +113,7 @@ const members = [
     email: "rashida.begum@example.com",
     phone: "+81-90-7777-8888",
     kind: "ADVISER",
-    is_deleted: true,
+    is_deleted: false,
     approved_at: "2024-01-11T11:20:00Z",
     approved_by_id: "admin1",
     created_at: "2024-01-10T11:20:00Z",
@@ -164,6 +166,7 @@ const memberKindLabels = {
 
 export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [members, setMembers] = useState(mockMembers);
 
   const [selectedMember, setSelectedMember] = useState<
     (typeof members)[0] | null
@@ -217,6 +220,36 @@ export default function MembersPage() {
       setIsDeleteDialogOpen(false);
       setSelectedMember(null);
     }
+  };
+
+  const handleApprove = (member: (typeof members)[0]) => {
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === member.id
+          ? {
+              ...m,
+              approved_at: new Date().toISOString(),
+              approved_by_id: "current_admin",
+              approved_by: { name: "Current Admin" },
+              updated_at: new Date().toISOString(),
+            }
+          : m
+      )
+    );
+  };
+
+  const handleReject = (member: (typeof members)[0]) => {
+    setMembers((prev) =>
+      prev.map((m) =>
+        m.id === member.id
+          ? {
+              ...m,
+              is_deleted: true,
+              updated_at: new Date().toISOString(),
+            }
+          : m
+      )
+    );
   };
 
   return (
@@ -406,25 +439,52 @@ export default function MembersPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleViewMember(member)}
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Details
-                            </DropdownMenuItem>
-                            <DropdownMenuItem asChild>
-                              <Link href={`/members/edit/${member.id}`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit Member
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => handleDeleteMember(member)}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete Permanently
-                            </DropdownMenuItem>
+                            {!member.approved_at && !member.is_deleted ? (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewMember(member)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleApprove(member)}
+                                  className="text-green-600"
+                                >
+                                  <Check className="mr-2 h-4 w-4" />
+                                  Approve Member
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  onClick={() => handleReject(member)}
+                                  className="text-red-600"
+                                >
+                                  <X className="mr-2 h-4 w-4" />
+                                  Reject Member
+                                </DropdownMenuItem>
+                              </>
+                            ) : (
+                              <>
+                                <DropdownMenuItem
+                                  onClick={() => handleViewMember(member)}
+                                >
+                                  <Eye className="mr-2 h-4 w-4" />
+                                  View Details
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                  <Link href={`/members/edit/${member.id}`}>
+                                    <Edit className="mr-2 h-4 w-4" />
+                                    Edit Member
+                                  </Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem
+                                  className="text-red-600"
+                                  onClick={() => handleDeleteMember(member)}
+                                >
+                                  <Trash2 className="mr-2 h-4 w-4" />
+                                  Delete Permanently
+                                </DropdownMenuItem>
+                              </>
+                            )}
                           </DropdownMenuContent>
                         </DropdownMenu>
                       </TableCell>
