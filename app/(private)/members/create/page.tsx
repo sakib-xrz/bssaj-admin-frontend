@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, User, Mail, Phone, Award } from "lucide-react";
+import { ArrowLeft, User, Mail, Phone, Shield } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Container from "@/components/shared/container";
@@ -33,7 +33,7 @@ const memberSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone number is required"),
-  designation: Yup.string().required("Designation is required"),
+  kind: Yup.string().required("Member kind is required"),
 });
 
 // Mock users data - replace with actual API call (users who are not already members)
@@ -64,15 +64,12 @@ const mockAvailableUsers = [
   },
 ];
 
-const designations = [
-  { value: "President", label: "President" },
-  { value: "Vice President", label: "Vice President" },
-  { value: "Secretary", label: "Secretary" },
-  { value: "Treasurer", label: "Treasurer" },
-  { value: "Board Member", label: "Board Member" },
-  { value: "Committee Member", label: "Committee Member" },
-  { value: "Advisor", label: "Advisor" },
-  { value: "Coordinator", label: "Coordinator" },
+const memberKinds = [
+  { value: "ADVISER", label: "Adviser" },
+  { value: "HONORABLE", label: "Honorable" },
+  { value: "EXECUTIVE", label: "Executive" },
+  { value: "ASSOCIATE", label: "Associate" },
+  { value: "STUDENT_REPRESENTATIVE", label: "Student Representative" },
 ];
 
 export default function CreateMemberPage() {
@@ -85,7 +82,7 @@ export default function CreateMemberPage() {
       name: "",
       email: "",
       phone: "",
-      designation: "",
+      kind: "",
     },
     validationSchema: memberSchema,
     onSubmit: async (values) => {
@@ -255,40 +252,35 @@ export default function CreateMemberPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="designation">Designation *</Label>
+                  <Label htmlFor="kind">Member Kind *</Label>
                   <Select
-                    value={formik.values.designation}
+                    value={formik.values.kind}
                     onValueChange={(value) =>
-                      formik.setFieldValue("designation", value)
+                      formik.setFieldValue("kind", value)
                     }
                   >
                     <SelectTrigger
                       className={
-                        formik.touched.designation && formik.errors.designation
+                        formik.touched.kind && formik.errors.kind
                           ? "border-red-500"
                           : ""
                       }
                     >
-                      <SelectValue placeholder="Select designation" />
+                      <SelectValue placeholder="Select member kind" />
                     </SelectTrigger>
                     <SelectContent>
-                      {designations.map((designation) => (
-                        <SelectItem
-                          key={designation.value}
-                          value={designation.value}
-                        >
+                      {memberKinds.map((kind) => (
+                        <SelectItem key={kind.value} value={kind.value}>
                           <div className="flex items-center space-x-2">
-                            <Award className="w-4 h-4" />
-                            <span>{designation.label}</span>
+                            <Shield className="w-4 h-4" />
+                            <span>{kind.label}</span>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {formik.touched.designation && formik.errors.designation && (
-                    <p className="text-sm text-red-500">
-                      {formik.errors.designation}
-                    </p>
+                  {formik.touched.kind && formik.errors.kind && (
+                    <p className="text-sm text-red-500">{formik.errors.kind}</p>
                   )}
                 </div>
               </div>
@@ -305,6 +297,17 @@ export default function CreateMemberPage() {
                   </li>
                   <li>• Maintain active communication with other members</li>
                 </ul>
+              </div>
+
+              <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                <h4 className="font-medium text-yellow-900 mb-2">
+                  Approval Required
+                </h4>
+                <p className="text-sm text-yellow-800">
+                  New members require approval from an administrator before they
+                  can access member-only features. The member will be notified
+                  once their membership is approved.
+                </p>
               </div>
 
               <div className="flex justify-end space-x-4">

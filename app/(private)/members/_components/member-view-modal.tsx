@@ -9,7 +9,16 @@ import {
 } from "@/components/ui/dialog";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { User, Mail, Phone, Award, Calendar, Shield } from "lucide-react";
+import {
+  User,
+  Mail,
+  Phone,
+  Calendar,
+  Shield,
+  CheckCircle,
+  Clock,
+  UserCheck,
+} from "lucide-react";
 import { format } from "date-fns";
 
 interface MemberViewModalProps {
@@ -19,26 +28,38 @@ interface MemberViewModalProps {
     name: string;
     email: string;
     phone: string;
-    designation: string;
+    kind: string;
     is_deleted: boolean;
+    approved_at: string | null;
+    approved_by_id: string | null;
     created_at: string;
     updated_at: string;
     user: {
       role: string;
       is_deleted: boolean;
     };
+    approved_by?: {
+      name: string;
+    } | null;
   } | null;
   isOpen: boolean;
   onClose: () => void;
 }
 
-const designationColors = {
-  President: "bg-purple-100 text-purple-800",
-  "Vice President": "bg-blue-100 text-blue-800",
-  Secretary: "bg-green-100 text-green-800",
-  Treasurer: "bg-orange-100 text-orange-800",
-  "Board Member": "bg-gray-100 text-gray-800",
-  "Committee Member": "bg-yellow-100 text-yellow-800",
+const memberKindColors = {
+  ADVISER: "bg-purple-100 text-purple-800",
+  HONORABLE: "bg-indigo-100 text-indigo-800",
+  EXECUTIVE: "bg-blue-100 text-blue-800",
+  ASSOCIATE: "bg-green-100 text-green-800",
+  STUDENT_REPRESENTATIVE: "bg-orange-100 text-orange-800",
+};
+
+const memberKindLabels = {
+  ADVISER: "Adviser",
+  HONORABLE: "Honorable",
+  EXECUTIVE: "Executive",
+  ASSOCIATE: "Associate",
+  STUDENT_REPRESENTATIVE: "Student Representative",
 };
 
 export function MemberViewModal({
@@ -50,7 +71,7 @@ export function MemberViewModal({
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl">
+      <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center space-x-2">
             <User className="w-5 h-5" />
@@ -74,15 +95,19 @@ export function MemberViewModal({
               </div>
               <div className="flex-1">
                 <h3 className="text-xl font-semibold">{member.name}</h3>
-                <div className="flex items-center space-x-2 mt-1">
+                <div className="flex items-center space-x-2 mt-1 flex-wrap gap-1">
                   <Badge
                     className={
-                      designationColors[
-                        member.designation as keyof typeof designationColors
-                      ] || designationColors["Committee Member"]
+                      memberKindColors[
+                        member.kind as keyof typeof memberKindColors
+                      ]
                     }
                   >
-                    {member.designation}
+                    {
+                      memberKindLabels[
+                        member.kind as keyof typeof memberKindLabels
+                      ]
+                    }
                   </Badge>
                   <Badge
                     className={
@@ -93,6 +118,17 @@ export function MemberViewModal({
                   >
                     {member.is_deleted ? "Inactive" : "Active"}
                   </Badge>
+                  {member.approved_at ? (
+                    <Badge className="bg-emerald-100 text-emerald-800">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Approved
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-orange-100 text-orange-800">
+                      <Clock className="w-3 h-3 mr-1" />
+                      Pending Approval
+                    </Badge>
+                  )}
                 </div>
               </div>
             </div>
@@ -137,63 +173,128 @@ export function MemberViewModal({
 
           <Separator />
 
-          {/* Role Information */}
+          {/* Member Classification */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-900">
+              Member Classification
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
+                  <Shield className="w-4 h-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-gray-500">
+                    Designation
+                  </p>
+                  <p className="text-sm font-semibold">
+                    {
+                      memberKindLabels[
+                        member.kind as keyof typeof memberKindLabels
+                      ]
+                    }
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Approval Information */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-900">Approval Status</h4>
+            {member.approved_at ? (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <CheckCircle className="w-5 h-5 text-green-600" />
+                  <span className="font-medium text-green-800">
+                    Member Approved
+                  </span>
+                </div>
+                <div className="mt-2 space-y-1">
+                  <p className="text-sm text-green-700">
+                    <strong>Approved on:</strong>{" "}
+                    {format(new Date(member.approved_at), "PPP")}
+                  </p>
+                  {member.approved_by && (
+                    <p className="text-sm text-green-700">
+                      <strong>Approved by:</strong> {member.approved_by.name}
+                    </p>
+                  )}
+                </div>
+              </div>
+            ) : (
+              <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                <div className="flex items-center space-x-2">
+                  <Clock className="w-5 h-5 text-orange-600" />
+                  <span className="font-medium text-orange-800">
+                    Pending Approval
+                  </span>
+                </div>
+                <p className="text-sm text-orange-700 mt-2">
+                  This member is waiting for administrative approval to access
+                  member-only features.
+                </p>
+              </div>
+            )}
+          </div>
+
+          <Separator />
+
+          {/* Role Information & Responsibilities */}
           <div className="space-y-4">
             <h4 className="font-semibold text-gray-900">
               Role & Responsibilities
             </h4>
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
-                <Award className="w-4 h-4 text-primary" />
-              </div>
-              <div>
-                <p className="text-sm font-medium text-gray-500">Designation</p>
-                <p className="text-sm">{member.designation}</p>
-              </div>
-            </div>
+
+            {/* Member Kind Responsibilities */}
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
               <h5 className="font-medium text-blue-900 mb-2">
-                Key Responsibilities
+                {memberKindLabels[member.kind as keyof typeof memberKindLabels]}{" "}
+                Responsibilities
               </h5>
               <ul className="text-sm text-blue-800 space-y-1">
-                {member.designation === "President" && (
+                {member.kind === "ADVISER" && (
                   <>
-                    <li>• Lead the organization and represent BSSAJ</li>
-                    <li>• Oversee all organizational activities</li>
+                    <li>
+                      • Provide guidance and strategic direction to the
+                      organization
+                    </li>
+                    <li>• Mentor executive members and committee leaders</li>
+                    <li>• Participate in high-level decision making</li>
+                  </>
+                )}
+                {member.kind === "HONORABLE" && (
+                  <>
+                    <li>
+                      • Represent the organization in ceremonial functions
+                    </li>
+                    <li>• Provide dignified leadership and guidance</li>
+                    <li>• Support organizational prestige and reputation</li>
+                  </>
+                )}
+                {member.kind === "EXECUTIVE" && (
+                  <>
+                    <li>• Lead organizational operations and initiatives</li>
                     <li>• Make strategic decisions for the association</li>
+                    <li>• Oversee committees and coordinate activities</li>
                   </>
                 )}
-                {member.designation === "Vice President" && (
+                {member.kind === "ASSOCIATE" && (
                   <>
-                    <li>• Assist the President in organizational leadership</li>
-                    <li>• Coordinate with different committees</li>
-                    <li>• Act as President when needed</li>
+                    <li>• Participate actively in organizational activities</li>
+                    <li>• Support committees and working groups</li>
+                    <li>• Contribute to community engagement initiatives</li>
                   </>
                 )}
-                {member.designation === "Secretary" && (
+                {member.kind === "STUDENT_REPRESENTATIVE" && (
                   <>
-                    <li>• Maintain meeting minutes and records</li>
-                    <li>• Handle official correspondence</li>
-                    <li>• Coordinate meetings and events</li>
-                  </>
-                )}
-                {member.designation === "Treasurer" && (
-                  <>
-                    <li>• Manage organizational finances</li>
-                    <li>• Prepare financial reports</li>
-                    <li>• Oversee budget and expenses</li>
-                  </>
-                )}
-                {![
-                  "President",
-                  "Vice President",
-                  "Secretary",
-                  "Treasurer",
-                ].includes(member.designation) && (
-                  <>
-                    <li>• Participate in organizational activities</li>
-                    <li>• Contribute to committee work</li>
-                    <li>• Support organizational goals</li>
+                    <li>• Represent student interests and concerns</li>
+                    <li>
+                      • Bridge communication between students and leadership
+                    </li>
+                    <li>• Organize student-focused activities and events</li>
                   </>
                 )}
               </ul>
@@ -202,28 +303,10 @@ export function MemberViewModal({
 
           <Separator />
 
-          {/* System Information */}
+          {/* Timeline Information */}
           <div className="space-y-4">
-            <h4 className="font-semibold text-gray-900">System Information</h4>
+            <h4 className="font-semibold text-gray-900">Member Timeline</h4>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
-                  <Shield className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">User Role</p>
-                  <p className="text-sm">{member.user.role}</p>
-                </div>
-              </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
-                  <User className="w-4 h-4 text-primary" />
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-gray-500">User ID</p>
-                  <p className="text-sm font-mono">{member.user_id}</p>
-                </div>
-              </div>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
                   <Calendar className="w-4 h-4 text-primary" />
@@ -233,21 +316,50 @@ export function MemberViewModal({
                     Member Since
                   </p>
                   <p className="text-sm">
-                    {format(new Date(member.created_at), "dd MMM yyyy")}
+                    {format(new Date(member.created_at), "PPP")}
                   </p>
                 </div>
               </div>
               <div className="flex items-center space-x-3">
                 <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">
-                  <Calendar className="w-4 h-4 text-primary" />
+                  <UserCheck className="w-4 h-4 text-primary" />
                 </div>
                 <div>
                   <p className="text-sm font-medium text-gray-500">
                     Last Updated
                   </p>
                   <p className="text-sm">
-                    {format(new Date(member.updated_at), "dd MMM yyyy")}
+                    {format(new Date(member.updated_at), "PPP")}
                   </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* System Information */}
+          <div className="space-y-4">
+            <h4 className="font-semibold text-gray-900">System Information</h4>
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                <div>
+                  <span className="font-medium text-gray-700">Member ID:</span>
+                  <span className="ml-2 text-gray-600">{member.id}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">User ID:</span>
+                  <span className="ml-2 text-gray-600">{member.user_id}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">User Role:</span>
+                  <span className="ml-2 text-gray-600">{member.user.role}</span>
+                </div>
+                <div>
+                  <span className="font-medium text-gray-700">Status:</span>
+                  <span className="ml-2 text-gray-600">
+                    {member.is_deleted ? "Inactive" : "Active"}
+                  </span>
                 </div>
               </div>
             </div>

@@ -36,28 +36,34 @@ import {
   Phone,
   Mail,
   UserCheck,
-  UserX,
+  CheckCircle,
+  Clock,
 } from "lucide-react";
 import { MemberViewModal } from "./_components/member-view-modal";
-import { MemberDeactivateModal } from "./_components/member-deactivate-modal";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
 
-const mockMembers = [
+// Updated mock data with new schema
+const members = [
   {
     id: "1",
     user_id: "1",
     name: "Dr. Ahmed Rahman",
     email: "ahmed.rahman@example.com",
     phone: "+81-90-1234-5678",
-    designation: "President",
+    kind: "EXECUTIVE",
     is_deleted: false,
+    approved_at: "2024-01-16T10:30:00Z",
+    approved_by_id: "admin1",
     created_at: "2024-01-15T10:30:00Z",
     updated_at: "2024-01-15T10:30:00Z",
     user: {
       role: "ADMIN",
       is_deleted: false,
+    },
+    approved_by: {
+      name: "Admin User",
     },
   },
   {
@@ -66,13 +72,18 @@ const mockMembers = [
     name: "Ms. Fatima Khan",
     email: "fatima.khan@example.com",
     phone: "+81-80-9876-5432",
-    designation: "Vice President",
+    kind: "EXECUTIVE",
     is_deleted: false,
+    approved_at: "2024-01-16T09:15:00Z",
+    approved_by_id: "admin1",
     created_at: "2024-01-14T09:15:00Z",
     updated_at: "2024-01-14T09:15:00Z",
     user: {
       role: "STUDENT",
       is_deleted: false,
+    },
+    approved_by: {
+      name: "Admin User",
     },
   },
   {
@@ -81,14 +92,17 @@ const mockMembers = [
     name: "Mr. Mohammad Ali",
     email: "mohammad.ali@example.com",
     phone: "+81-70-5555-1234",
-    designation: "Secretary",
+    kind: "ASSOCIATE",
     is_deleted: false,
+    approved_at: null,
+    approved_by_id: null,
     created_at: "2024-01-13T14:45:00Z",
     updated_at: "2024-01-13T14:45:00Z",
     user: {
       role: "STUDENT",
       is_deleted: false,
     },
+    approved_by: null,
   },
   {
     id: "4",
@@ -96,35 +110,65 @@ const mockMembers = [
     name: "Dr. Rashida Begum",
     email: "rashida.begum@example.com",
     phone: "+81-90-7777-8888",
-    designation: "Treasurer",
+    kind: "ADVISER",
     is_deleted: true,
+    approved_at: "2024-01-11T11:20:00Z",
+    approved_by_id: "admin1",
     created_at: "2024-01-10T11:20:00Z",
     updated_at: "2024-01-12T16:30:00Z",
     user: {
       role: "STUDENT",
       is_deleted: false,
     },
+    approved_by: {
+      name: "Admin User",
+    },
+  },
+  {
+    id: "5",
+    user_id: "5",
+    name: "Ahmed Hassan",
+    email: "ahmed.hassan@example.com",
+    phone: "+81-90-1111-2222",
+    kind: "STUDENT_REPRESENTATIVE",
+    is_deleted: false,
+    approved_at: "2024-01-18T14:00:00Z",
+    approved_by_id: "admin1",
+    created_at: "2024-01-18T10:00:00Z",
+    updated_at: "2024-01-18T10:00:00Z",
+    user: {
+      role: "STUDENT",
+      is_deleted: false,
+    },
+    approved_by: {
+      name: "Admin User",
+    },
   },
 ];
 
-const designationColors = {
-  President: "bg-purple-100 text-purple-800",
-  "Vice President": "bg-blue-100 text-blue-800",
-  Secretary: "bg-green-100 text-green-800",
-  Treasurer: "bg-orange-100 text-orange-800",
-  "Board Member": "bg-gray-100 text-gray-800",
-  "Committee Member": "bg-yellow-100 text-yellow-800",
+const memberKindColors = {
+  ADVISER: "bg-purple-100 text-purple-800",
+  HONORABLE: "bg-indigo-100 text-indigo-800",
+  EXECUTIVE: "bg-blue-100 text-blue-800",
+  ASSOCIATE: "bg-green-100 text-green-800",
+  STUDENT_REPRESENTATIVE: "bg-orange-100 text-orange-800",
+};
+
+const memberKindLabels = {
+  ADVISER: "Adviser",
+  HONORABLE: "Honorable",
+  EXECUTIVE: "Executive",
+  ASSOCIATE: "Associate",
+  STUDENT_REPRESENTATIVE: "Student Rep",
 };
 
 export default function MembersPage() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [members, setMembers] = useState(mockMembers);
 
   const [selectedMember, setSelectedMember] = useState<
-    (typeof mockMembers)[0] | null
+    (typeof members)[0] | null
   >(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
-  const [isDeactivateModalOpen, setIsDeactivateModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -132,59 +176,31 @@ export default function MembersPage() {
     const matchesSearch =
       member.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       member.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.designation.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      member.phone.includes(searchTerm);
+      member.phone.includes(searchTerm) ||
+      memberKindLabels[member.kind as keyof typeof memberKindLabels]
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase());
 
     return matchesSearch;
   });
 
-  const toggleMemberStatus = (memberId: string) => {
-    setMembers((prev) =>
-      prev.map((member) =>
-        member.id === memberId
-          ? {
-              ...member,
-              is_deleted: !member.is_deleted,
-              updated_at: new Date().toISOString(),
-            }
-          : member
-      )
-    );
-  };
-
   const activeMembersCount = members.filter((m) => !m.is_deleted).length;
-  const deletedMembersCount = members.filter((m) => m.is_deleted).length;
 
-  const handleViewMember = (member: (typeof mockMembers)[0]) => {
+  const approvedMembersCount = members.filter(
+    (m) => m.approved_at && !m.is_deleted
+  ).length;
+  const pendingApprovalCount = members.filter(
+    (m) => !m.approved_at && !m.is_deleted
+  ).length;
+
+  const handleViewMember = (member: (typeof members)[0]) => {
     setSelectedMember(member);
     setIsViewModalOpen(true);
   };
 
-  const handleDeactivateMember = (member: (typeof mockMembers)[0]) => {
-    setSelectedMember(member);
-    setIsDeactivateModalOpen(true);
-  };
-
-  const handleDeleteMember = (member: (typeof mockMembers)[0]) => {
+  const handleDeleteMember = (member: (typeof members)[0]) => {
     setSelectedMember(member);
     setIsDeleteDialogOpen(true);
-  };
-
-  const handleRestoreMember = (member: (typeof mockMembers)[0]) => {
-    setSelectedMember(member);
-    toggleMemberStatus(member.id);
-  };
-
-  const confirmDeactivate = async (reason: string) => {
-    if (!selectedMember) return;
-    try {
-      console.log("Deactivating member:", selectedMember.id, "Reason:", reason);
-      toggleMemberStatus(selectedMember.id);
-      setIsDeactivateModalOpen(false);
-      setSelectedMember(null);
-    } catch (error) {
-      console.error("Error deactivating member:", error);
-    }
   };
 
   const confirmDelete = async () => {
@@ -237,23 +253,16 @@ export default function MembersPage() {
               icon: UserCheck,
             },
             {
-              label: "Inactive Members",
-              count: deletedMembersCount,
-              color: "text-red-600",
-              icon: UserCheck,
+              label: "Approved Members",
+              count: approvedMembersCount,
+              color: "text-purple-600",
+              icon: CheckCircle,
             },
             {
-              label: "Board Members",
-              count: members.filter((m) =>
-                [
-                  "President",
-                  "Vice President",
-                  "Secretary",
-                  "Treasurer",
-                ].includes(m.designation)
-              ).length,
-              color: "text-purple-600",
-              icon: UserCheck,
+              label: "Pending Approval",
+              count: pendingApprovalCount,
+              color: "text-orange-600",
+              icon: Clock,
             },
           ].map((stat) => {
             const Icon = stat.icon;
@@ -304,7 +313,7 @@ export default function MembersPage() {
                     <TableHead>Member</TableHead>
                     <TableHead>Designation</TableHead>
                     <TableHead>Contact</TableHead>
-                    <TableHead>Status</TableHead>
+                    <TableHead>Approval</TableHead>
                     <TableHead>Joined</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -335,12 +344,16 @@ export default function MembersPage() {
                       <TableCell>
                         <Badge
                           className={
-                            designationColors[
-                              member.designation as keyof typeof designationColors
-                            ] || designationColors["Committee Member"]
+                            memberKindColors[
+                              member.kind as keyof typeof memberKindColors
+                            ]
                           }
                         >
-                          {member.designation}
+                          {
+                            memberKindLabels[
+                              member.kind as keyof typeof memberKindLabels
+                            ]
+                          }
                         </Badge>
                       </TableCell>
                       <TableCell>
@@ -366,15 +379,21 @@ export default function MembersPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge
-                          className={
-                            member.is_deleted
-                              ? "bg-red-100 text-red-800"
-                              : "bg-green-100 text-green-800"
-                          }
-                        >
-                          {member.is_deleted ? "Inactive" : "Active"}
-                        </Badge>
+                        {member.approved_at ? (
+                          <div className="flex items-center space-x-1">
+                            <CheckCircle className="w-4 h-4 text-green-600" />
+                            <span className="text-sm text-green-600">
+                              Approved
+                            </span>
+                          </div>
+                        ) : (
+                          <div className="flex items-center space-x-1">
+                            <Clock className="w-4 h-4 text-orange-600" />
+                            <span className="text-sm text-orange-600">
+                              Pending
+                            </span>
+                          </div>
+                        )}
                       </TableCell>
                       <TableCell>
                         {format(new Date(member.created_at), "dd MMM yyyy")}
@@ -400,27 +419,6 @@ export default function MembersPage() {
                               </Link>
                             </DropdownMenuItem>
                             <DropdownMenuItem
-                              onClick={() => {
-                                if (member.is_deleted) {
-                                  handleRestoreMember(member);
-                                } else {
-                                  handleDeactivateMember(member);
-                                }
-                              }}
-                            >
-                              {member.is_deleted ? (
-                                <>
-                                  <UserCheck className="mr-2 h-4 w-4" />
-                                  Restore Member
-                                </>
-                              ) : (
-                                <>
-                                  <UserX className="mr-2 h-4 w-4" />
-                                  Deactivate Member
-                                </>
-                              )}
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
                               className="text-red-600"
                               onClick={() => handleDeleteMember(member)}
                             >
@@ -444,19 +442,12 @@ export default function MembersPage() {
           onClose={() => setIsViewModalOpen(false)}
         />
 
-        <MemberDeactivateModal
-          member={selectedMember}
-          isOpen={isDeactivateModalOpen}
-          onClose={() => setIsDeactivateModalOpen(false)}
-          onConfirm={confirmDeactivate}
-        />
-
         <DeleteAlertDialog
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
           onConfirm={confirmDelete}
           title="Delete Member"
-          description="Are you sure you want to permanently delete this member? This action cannot be undone."
+          description="Are you sure you want to delete this member? This action cannot be undone."
           itemName={selectedMember?.name || ""}
           isLoading={isDeleting}
         />

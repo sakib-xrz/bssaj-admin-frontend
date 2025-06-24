@@ -19,11 +19,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, User, Mail, Phone, Award } from "lucide-react";
+import {
+  ArrowLeft,
+  User,
+  Mail,
+  Phone,
+  Shield,
+  CheckCircle,
+} from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { useParams } from "next/navigation";
 import Container from "@/components/shared/container";
+import { Badge } from "@/components/ui/badge";
 
 const memberSchema = Yup.object({
   name: Yup.string()
@@ -33,18 +41,15 @@ const memberSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   phone: Yup.string().required("Phone number is required"),
-  designation: Yup.string().required("Designation is required"),
+  kind: Yup.string().required("Member kind is required"),
 });
 
-const designations = [
-  { value: "President", label: "President" },
-  { value: "Vice President", label: "Vice President" },
-  { value: "Secretary", label: "Secretary" },
-  { value: "Treasurer", label: "Treasurer" },
-  { value: "Board Member", label: "Board Member" },
-  { value: "Committee Member", label: "Committee Member" },
-  { value: "Advisor", label: "Advisor" },
-  { value: "Coordinator", label: "Coordinator" },
+const memberKinds = [
+  { value: "ADVISER", label: "Adviser" },
+  { value: "HONORABLE", label: "Honorable" },
+  { value: "EXECUTIVE", label: "Executive" },
+  { value: "ASSOCIATE", label: "Associate" },
+  { value: "STUDENT_REPRESENTATIVE", label: "Student Representative" },
 ];
 
 // Mock member data - replace with actual API call
@@ -54,24 +59,30 @@ const mockMember = {
   name: "Dr. Ahmed Rahman",
   email: "ahmed.rahman@example.com",
   phone: "+81-90-1234-5678",
-  designation: "President",
+  kind: "EXECUTIVE",
   is_deleted: false,
+  approved_at: "2024-01-16T10:30:00Z",
+  approved_by_id: "admin1",
   created_at: "2024-01-15T10:30:00Z",
   updated_at: "2024-01-15T10:30:00Z",
+  approved_by: {
+    name: "Admin User",
+  },
 };
 
 export default function EditMemberPage() {
   const params = useParams();
   const memberId = params.id as string;
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [member] = useState(mockMember);
+  const [isApproving, setIsApproving] = useState(false);
+  const [member, setMember] = useState(mockMember);
 
   const formik = useFormik({
     initialValues: {
       name: member.name,
       email: member.email,
       phone: member.phone,
-      designation: member.designation,
+      kind: member.kind,
     },
     validationSchema: memberSchema,
     enableReinitialize: true,
@@ -88,6 +99,27 @@ export default function EditMemberPage() {
       }
     },
   });
+
+  const handleApprove = async () => {
+    setIsApproving(true);
+    try {
+      console.log("Approving member:", memberId);
+      // Update local state to reflect approval
+      setMember((prev) => ({
+        ...prev,
+        approved_at: new Date().toISOString(),
+        approved_by_id: "current_admin_id", // Replace with actual admin ID
+        approved_by: {
+          name: "Current Admin", // Replace with actual admin name
+        },
+      }));
+      // API call to approve member would go here
+    } catch (error) {
+      console.error("Error approving member:", error);
+    } finally {
+      setIsApproving(false);
+    }
+  };
 
   return (
     <Container>
@@ -113,6 +145,42 @@ export default function EditMemberPage() {
             <CardDescription>Update the member details below</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Approval Status */}
+            <div className="mb-6 p-4 rounded-lg border">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2">
+                  <h4 className="font-medium">Approval Status:</h4>
+                  {member.approved_at ? (
+                    <Badge className="bg-green-100 text-green-800">
+                      <CheckCircle className="w-3 h-3 mr-1" />
+                      Approved
+                    </Badge>
+                  ) : (
+                    <Badge className="bg-orange-100 text-orange-800">
+                      Pending Approval
+                    </Badge>
+                  )}
+                </div>
+                {!member.approved_at && (
+                  <Button
+                    onClick={handleApprove}
+                    size="sm"
+                    disabled={isApproving}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    {isApproving ? "Approving..." : "Approve Member"}
+                  </Button>
+                )}
+              </div>
+              {member.approved_at && member.approved_by && (
+                <p className="text-sm text-gray-600 mt-2">
+                  Approved by {member.approved_by.name} on{" "}
+                  {new Date(member.approved_at).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -192,52 +260,53 @@ export default function EditMemberPage() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="designation">Designation *</Label>
+                  <Label htmlFor="kind">Member Kind *</Label>
                   <Select
-                    value={formik.values.designation}
+                    value={formik.values.kind}
                     onValueChange={(value) =>
-                      formik.setFieldValue("designation", value)
+                      formik.setFieldValue("kind", value)
                     }
                   >
                     <SelectTrigger
                       className={
-                        formik.touched.designation && formik.errors.designation
+                        formik.touched.kind && formik.errors.kind
                           ? "border-red-500"
                           : ""
                       }
                     >
-                      <SelectValue placeholder="Select designation" />
+                      <SelectValue placeholder="Select member kind" />
                     </SelectTrigger>
                     <SelectContent>
-                      {designations.map((designation) => (
-                        <SelectItem
-                          key={designation.value}
-                          value={designation.value}
-                        >
+                      {memberKinds.map((kind) => (
+                        <SelectItem key={kind.value} value={kind.value}>
                           <div className="flex items-center space-x-2">
-                            <Award className="w-4 h-4" />
-                            <span>{designation.label}</span>
+                            <Shield className="w-4 h-4" />
+                            <span>{kind.label}</span>
                           </div>
                         </SelectItem>
                       ))}
                     </SelectContent>
                   </Select>
-                  {formik.touched.designation && formik.errors.designation && (
-                    <p className="text-sm text-red-500">
-                      {formik.errors.designation}
-                    </p>
+                  {formik.touched.kind && formik.errors.kind && (
+                    <p className="text-sm text-red-500">{formik.errors.kind}</p>
                   )}
                 </div>
               </div>
 
               <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                 <h4 className="font-medium text-blue-900 mb-2">
-                  Important Notes
+                  Update Information
                 </h4>
                 <ul className="text-sm text-blue-800 space-y-1">
-                  <li>• Changing designation may affect member permissions</li>
-                  <li>• Email changes will require verification</li>
-                  <li>• Phone number is used for important communications</li>
+                  <li>
+                    • Member created on:{" "}
+                    {new Date(member.created_at).toLocaleDateString()}
+                  </li>
+                  <li>
+                    • Last updated:{" "}
+                    {new Date(member.updated_at).toLocaleDateString()}
+                  </li>
+                  <li>• User ID: {member.user_id}</li>
                 </ul>
               </div>
 
@@ -252,7 +321,7 @@ export default function EditMemberPage() {
                   disabled={isSubmitting}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Updating..." : "Update Member"}
+                  {isSubmitting ? "Updating Member..." : "Update Member"}
                 </Button>
               </div>
             </form>
