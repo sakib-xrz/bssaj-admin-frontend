@@ -242,7 +242,7 @@ export default function EditMemberPage() {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Link href="/admin/members">
+                <Link href="/members">
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

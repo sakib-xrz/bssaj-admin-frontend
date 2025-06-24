@@ -8,12 +8,12 @@ import {
   Users,
   UserCheck,
   Building2,
-  // Calendar,
-  // FileText,
-  // CreditCard,
-  // MessageSquare,
-  // Settings,
-  // Award,
+  Calendar,
+  FileText,
+  CreditCard,
+  MessageSquare,
+  Settings,
+  Award,
 } from "lucide-react";
 
 const navigation = [
@@ -21,12 +21,12 @@ const navigation = [
   { name: "Users", href: "/users", icon: Users },
   { name: "Members", href: "/members", icon: UserCheck },
   { name: "Agencies", href: "/agencies", icon: Building2 },
-  // { name: "Memberships", href: "/memberships", icon: CreditCard },
-  // { name: "Events", href: "/events", icon: Calendar },
-  // { name: "Blogs", href: "/blogs", icon: FileText },
-  // { name: "News", href: "/news", icon: MessageSquare },
-  // { name: "Certifications", href: "/certifications", icon: Award },
-  // { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Memberships", href: "/memberships", icon: CreditCard },
+  { name: "Events", href: "/events", icon: Calendar },
+  { name: "Blogs", href: "/blogs", icon: FileText },
+  { name: "News", href: "/news", icon: MessageSquare },
+  { name: "Certifications", href: "/certifications", icon: Award },
+  { name: "Settings", href: "/settings", icon: Settings },
 ];
 
 export function SidebarContent() {

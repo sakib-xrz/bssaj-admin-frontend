@@ -223,7 +223,7 @@ export default function CreateUserPage() {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Link href="/admin/users">
+                <Link href="/users">
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>

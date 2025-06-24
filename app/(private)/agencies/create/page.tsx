@@ -355,7 +355,7 @@ export default function CreateAgencyPage() {
               </div>
 
               <div className="flex justify-end space-x-4">
-                <Link href="/admin/agencies">
+                <Link href="/agencies">
                   <Button type="button" variant="outline">
                     Cancel
                   </Button>
