@@ -34,10 +34,9 @@ const userSchema = Yup.object({
     .email("Invalid email format")
     .required("Email is required"),
   role: Yup.string()
-    .oneOf(["STUDENT", "AGENCY", "ADMIN"], "Invalid role")
+    .oneOf(["ADMIN", "AGENCY", "STUDENT", "USER"], "Invalid role")
     .required("Role is required"),
   address: Yup.string(),
-  current_study_info: Yup.string(),
 });
 
 // Mock user data - replace with actual API call
@@ -47,7 +46,6 @@ const mockUser = {
   email: "john@example.com",
   role: "STUDENT",
   address: "123 Main St, Tokyo, Japan",
-  current_study_info: "Master's in Computer Science at Tokyo University",
   agency_id: null,
   is_deleted: false,
   created_at: "2024-01-15T10:30:00Z",
@@ -65,7 +63,6 @@ export default function EditUserPage() {
       email: mockUser.email,
       role: mockUser.role,
       address: mockUser.address || "",
-      current_study_info: mockUser.current_study_info || "",
     },
     validationSchema: userSchema,
     enableReinitialize: true,
@@ -170,9 +167,10 @@ export default function EditUserPage() {
                     <SelectValue placeholder="Select role" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="STUDENT">Student</SelectItem>
-                    <SelectItem value="AGENCY">Agency</SelectItem>
                     <SelectItem value="ADMIN">Admin</SelectItem>
+                    <SelectItem value="AGENCY">Agency</SelectItem>
+                    <SelectItem value="STUDENT">Student</SelectItem>
+                    <SelectItem value="USER">User</SelectItem>
                   </SelectContent>
                 </Select>
                 {formik.touched.role && formik.errors.role && (
@@ -187,21 +185,6 @@ export default function EditUserPage() {
                   name="address"
                   placeholder="Enter address"
                   value={formik.values.address}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="current_study_info">
-                  Current Study Information
-                </Label>
-                <Textarea
-                  id="current_study_info"
-                  name="current_study_info"
-                  placeholder="Enter current study information"
-                  value={formik.values.current_study_info}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   rows={3}

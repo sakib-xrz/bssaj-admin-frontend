@@ -26,20 +26,34 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Search, MoreHorizontal, Edit, Trash2 } from "lucide-react";
+import {
+  Plus,
+  Search,
+  MoreHorizontal,
+  Edit,
+  Trash2,
+  Loader2,
+} from "lucide-react";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
-import { useGetUsersQuery } from "@/redux/features/user/userApi";
+import {
+  useGetUsersQuery,
+  useDeleteUserMutation,
+} from "@/redux/features/user/userApi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
 import { generateQueryString, sanitizeParams } from "@/lib/utils";
 import CustomPagination from "@/components/shared/custom-pagination";
+import { useCurrentUser } from "@/redux/features/auth/authSlice";
+import { toast } from "sonner";
 
 const roleColors = {
-  STUDENT: "bg-blue-100 text-blue-800",
+  SUPER_ADMIN: "bg-red-100 text-red-800",
+  ADMIN: "bg-blue-100 text-blue-800",
   AGENCY: "bg-green-100 text-green-800",
-  ADMIN: "bg-purple-100 text-purple-800",
+  STUDENT: "bg-purple-100 text-purple-800",
+  USER: "bg-yellow-100 text-yellow-800",
 };
 
 interface User {
@@ -57,6 +71,8 @@ interface User {
 export default function UsersPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  const currentUser = useCurrentUser();
 
   const initialParams = {
     page: Number(searchParams.get("page")) || 1,
@@ -87,7 +103,8 @@ export default function UsersPage() {
 
   const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
-  const [isDeleting, setIsDeleting] = useState(false);
+
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
   // Handle pagination page change
   const handlePageChange = (page: number) => {
@@ -102,7 +119,41 @@ export default function UsersPage() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  if (isLoading) return <div>Loading...</div>;
+  if (isLoading) {
+    return (
+      <Container>
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Users</h1>
+              <p className="text-gray-600">
+                Manage system users and their roles
+              </p>
+            </div>
+            <div className="w-[120px] h-10 bg-gray-200 animate-pulse rounded-md" />
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>All Users</CardTitle>
+              <CardDescription>
+                A list of all users in the system including their roles and
+                status
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-center h-64">
+                <Loader2 className="h-8 w-8 animate-spin text-gray-400" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </Container>
+    );
+  }
+
+  const hasUsers = users && users.length > 0;
+  const hasSearchQuery = params.search.length > 0;
 
   return (
     <Container>
@@ -112,12 +163,14 @@ export default function UsersPage() {
             <h1 className="text-3xl font-bold text-gray-900">Users</h1>
             <p className="text-gray-600">Manage system users and their roles</p>
           </div>
-          <Link href="/users/create">
-            <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
-              Add User
-            </Button>
-          </Link>
+          {currentUser?.role === "SUPER_ADMIN" && (
+            <Link href="/users/create">
+              <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
+                <Plus className="w-4 h-4 mr-2" />
+                Add User
+              </Button>
+            </Link>
+          )}
         </div>
 
         <Card>
@@ -141,76 +194,123 @@ export default function UsersPage() {
             </div>
 
             <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow className="whitespace-nowrap">
-                    <TableHead>Name</TableHead>
-                    <TableHead>Email</TableHead>
-                    <TableHead>Role</TableHead>
-                    <TableHead>Agency</TableHead>
-                    <TableHead>Created</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {users?.map((user: User) => (
-                    <TableRow key={user.id} className="whitespace-nowrap">
-                      <TableCell className="font-medium">{user.name}</TableCell>
-                      <TableCell>{user.email}</TableCell>
-                      <TableCell>
-                        <Badge
-                          className={
-                            roleColors[user.role as keyof typeof roleColors]
-                          }
-                        >
-                          {user.role.split("_").join(" ")}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        {user.agency ? (
-                          <span className="text-sm text-gray-600">
-                            {user.agency.name}
-                          </span>
-                        ) : (
-                          <span className="text-sm text-gray-400">
-                            No Agency
-                          </span>
-                        )}
-                      </TableCell>
-                      <TableCell>
-                        {format(new Date(user.created_at), "dd MMM yyyy")}
-                      </TableCell>
-                      <TableCell className="text-right">
-                        <DropdownMenu>
-                          <DropdownMenuTrigger asChild>
-                            <Button variant="ghost" className="h-8 w-8 p-0">
-                              <MoreHorizontal className="h-4 w-4" />
-                            </Button>
-                          </DropdownMenuTrigger>
-                          <DropdownMenuContent align="end">
-                            <DropdownMenuItem asChild>
-                              <Link href={`/users/edit/${user.id}`}>
-                                <Edit className="mr-2 h-4 w-4" />
-                                Edit User
-                              </Link>
-                            </DropdownMenuItem>
-                            <DropdownMenuItem
-                              className="text-red-600"
-                              onClick={() => {
-                                setSelectedUser(user);
-                                setIsDeleteDialogOpen(true);
-                              }}
-                            >
-                              <Trash2 className="mr-2 h-4 w-4" />
-                              Delete User
-                            </DropdownMenuItem>
-                          </DropdownMenuContent>
-                        </DropdownMenu>
-                      </TableCell>
+              {hasUsers ? (
+                <Table>
+                  <TableHeader>
+                    <TableRow className="whitespace-nowrap">
+                      <TableHead>Name</TableHead>
+                      <TableHead>Email</TableHead>
+                      <TableHead>Role</TableHead>
+                      <TableHead>Agency</TableHead>
+                      <TableHead>Created</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+                  </TableHeader>
+                  <TableBody>
+                    {users?.map((user: User) => (
+                      <TableRow key={user.id} className="whitespace-nowrap">
+                        <TableCell className="font-medium">
+                          {user.name}
+                        </TableCell>
+                        <TableCell>{user.email}</TableCell>
+                        <TableCell>
+                          <Badge
+                            className={
+                              roleColors[user.role as keyof typeof roleColors]
+                            }
+                          >
+                            {user.role.split("_").join(" ")}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {user.agency ? (
+                            <span className="text-sm text-gray-600">
+                              {user.agency.name}
+                            </span>
+                          ) : (
+                            <span className="text-sm text-gray-400">
+                              No Agency
+                            </span>
+                          )}
+                        </TableCell>
+                        <TableCell>
+                          {format(new Date(user.created_at), "dd MMM yyyy")}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="h-8 w-8 p-0"
+                                disabled={
+                                  user.id === currentUser?.id ||
+                                  user.role === "SUPER_ADMIN"
+                                }
+                              >
+                                <MoreHorizontal className="h-4 w-4" />
+                              </Button>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align="end">
+                              <DropdownMenuItem asChild>
+                                <Link href={`/users/edit/${user.id}`}>
+                                  <Edit className="mr-2 h-4 w-4" />
+                                  Edit User
+                                </Link>
+                              </DropdownMenuItem>
+                              <DropdownMenuItem
+                                className="text-red-600"
+                                onClick={() => {
+                                  setSelectedUser(user);
+                                  setIsDeleteDialogOpen(true);
+                                }}
+                                disabled={currentUser?.role === user.role}
+                              >
+                                <Trash2 className="mr-2 h-4 w-4" />
+                                Delete User
+                              </DropdownMenuItem>
+                            </DropdownMenuContent>
+                          </DropdownMenu>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              ) : (
+                <div className="flex flex-col items-center justify-center py-12 px-4">
+                  {hasSearchQuery ? (
+                    <>
+                      <p className="text-gray-500 text-lg mb-4">
+                        No users found matching &quot;{params.search}&quot;
+                      </p>
+                      <Button
+                        variant="outline"
+                        onClick={() => {
+                          setSearchInput("");
+                          setParams((prev) => ({
+                            ...prev,
+                            search: "",
+                            page: 1,
+                          }));
+                        }}
+                      >
+                        Clear search
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-gray-500 text-lg mb-4">
+                        No users added yet
+                      </p>
+                      <Link href="/users/create">
+                        <Button>
+                          <Plus className="w-4 h-4 mr-2" />
+                          Add your first user
+                        </Button>
+                      </Link>
+                    </>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Pagination */}
@@ -227,9 +327,18 @@ export default function UsersPage() {
         <DeleteAlertDialog
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
-          onConfirm={() => {
-            setIsDeleting(true);
-            console.log("Deleting user:", selectedUser?.id);
+          onConfirm={async () => {
+            if (!selectedUser) return;
+            try {
+              await deleteUser(selectedUser.id).unwrap();
+              setIsDeleteDialogOpen(false);
+              toast.success("User deleted successfully");
+            } catch (error) {
+              console.error("Failed to delete user:", error);
+              toast.error("Failed to delete user");
+            } finally {
+              setSelectedUser(null);
+            }
           }}
           title="Delete User"
           description="Are you sure you want to delete this user? This will permanently remove the user and all associated data."

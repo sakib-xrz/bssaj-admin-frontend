@@ -26,6 +26,7 @@ import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useCreateUserMutation } from "@/redux/features/user/userApi";
+import { toast } from "sonner";
 
 const userSchema = Yup.object({
   name: Yup.string()
@@ -60,9 +61,11 @@ export default function CreateUserPage() {
       try {
         await createUser(values).unwrap();
         router.push("/users");
+        toast.success("User created successfully");
       } catch (err) {
         // Error will be handled by the isError and error states
         console.error("Failed to create user:", err);
+        toast.error("Failed to create user");
       }
     },
   });
