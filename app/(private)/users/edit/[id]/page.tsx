@@ -22,9 +22,13 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
+import {
+  useGetUserByIdQuery,
+  useUpdateUserMutation,
+} from "@/redux/features/user/userApi";
+import { toast } from "sonner";
 
 const userSchema = Yup.object({
   name: Yup.string()
@@ -39,46 +43,47 @@ const userSchema = Yup.object({
   address: Yup.string(),
 });
 
-// Mock user data - replace with actual API call
-const mockUser = {
-  id: "1",
-  name: "John Doe",
-  email: "john@example.com",
-  role: "STUDENT",
-  address: "123 Main St, Tokyo, Japan",
-  agency_id: null,
-  is_deleted: false,
-  created_at: "2024-01-15T10:30:00Z",
-  updated_at: "2024-01-15T10:30:00Z",
-};
-
 export default function EditUserPage() {
   const params = useParams();
+  const router = useRouter();
+
   const userId = params.id as string;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Fetch user data
+  const { data: userData, isLoading } = useGetUserByIdQuery(userId);
+  const [updateUser] = useUpdateUserMutation();
 
   const formik = useFormik({
     initialValues: {
-      name: mockUser.name,
-      email: mockUser.email,
-      role: mockUser.role,
-      address: mockUser.address || "",
+      name: userData?.data?.name || "",
+      email: userData?.data?.email || "",
+      role: userData?.data?.role || "",
+      address: userData?.data?.address || "",
     },
     validationSchema: userSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      setIsSubmitting(true);
       try {
-        console.log("Updating user:", userId, values);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // Redirect to users list or show success message
+        await updateUser({
+          id: userId,
+          data: values,
+        }).unwrap();
+
+        toast.success("User updated successfully");
+
+        router.push("/users");
       } catch (error) {
-        console.error("Error updating user:", error);
-      } finally {
-        setIsSubmitting(false);
+        console.log(error);
+        toast.error("Failed to update user");
       }
     },
   });
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  console.log(formik.values);
 
   return (
     <Container>
@@ -123,7 +128,9 @@ export default function EditUserPage() {
                     }
                   />
                   {formik.touched.name && formik.errors.name && (
-                    <p className="text-sm text-red-500">{formik.errors.name}</p>
+                    <p className="text-sm text-red-500">
+                      {formik.errors.name as string}
+                    </p>
                   )}
                 </div>
 
@@ -142,10 +149,11 @@ export default function EditUserPage() {
                         ? "border-red-500"
                         : ""
                     }
+                    disabled
                   />
                   {formik.touched.email && formik.errors.email && (
                     <p className="text-sm text-red-500">
-                      {formik.errors.email}
+                      {formik.errors.email as string}
                     </p>
                   )}
                 </div>
@@ -174,7 +182,9 @@ export default function EditUserPage() {
                   </SelectContent>
                 </Select>
                 {formik.touched.role && formik.errors.role && (
-                  <p className="text-sm text-red-500">{formik.errors.role}</p>
+                  <p className="text-sm text-red-500">
+                    {formik.errors.role as string}
+                  </p>
                 )}
               </div>
 
@@ -199,10 +209,9 @@ export default function EditUserPage() {
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Updating..." : "Update User"}
+                  Update User
                 </Button>
               </div>
             </form>
