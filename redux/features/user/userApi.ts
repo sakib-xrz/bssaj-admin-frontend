@@ -4,9 +4,10 @@ import { tagTypes } from "@/redux/tagTypes";
 export const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getUsers: builder.query({
-      query: () => ({
+      query: (query) => ({
         url: `/users`,
         method: "GET",
+        params: query,
       }),
       providesTags: [tagTypes.user],
     }),
