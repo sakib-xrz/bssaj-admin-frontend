@@ -187,8 +187,6 @@ export default function MembersPage() {
     return matchesSearch;
   });
 
-  const activeMembersCount = members.filter((m) => !m.is_deleted).length;
-
   const approvedMembersCount = members.filter(
     (m) => m.approved_at && !m.is_deleted
   ).length;
@@ -271,18 +269,12 @@ export default function MembersPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[
             {
               label: "Total Members",
               count: members.length,
               color: "text-blue-600",
-              icon: UserCheck,
-            },
-            {
-              label: "Active Members",
-              count: activeMembersCount,
-              color: "text-green-600",
               icon: UserCheck,
             },
             {
