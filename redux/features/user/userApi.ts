@@ -35,3 +35,10 @@ export const userApi = baseApi.injectEndpoints({
     }),
   }),
 });
+
+export const {
+  useGetUsersQuery,
+  useCreateUserMutation,
+  useUpdateUserMutation,
+  useDeleteUserMutation,
+} = userApi;

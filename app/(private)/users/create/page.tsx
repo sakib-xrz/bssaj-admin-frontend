@@ -22,8 +22,10 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { useCreateUserMutation } from "@/redux/features/user/userApi";
 
 const userSchema = Yup.object({
   name: Yup.string()
@@ -42,7 +44,8 @@ const userSchema = Yup.object({
 });
 
 export default function CreateUserPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const [createUser, { isLoading, isError, error }] = useCreateUserMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -54,16 +57,12 @@ export default function CreateUserPage() {
     },
     validationSchema: userSchema,
     onSubmit: async (values) => {
-      setIsSubmitting(true);
       try {
-        // API call would go here
-        console.log("Creating user:", values);
-        await new Promise((resolve) => setTimeout(resolve, 1000)); // Simulate API call
-        // Redirect to users list or show success message
-      } catch (error) {
-        console.error("Error creating user:", error);
-      } finally {
-        setIsSubmitting(false);
+        await createUser(values).unwrap();
+        router.push("/users");
+      } catch (err) {
+        // Error will be handled by the isError and error states
+        console.error("Failed to create user:", err);
       }
     },
   });
@@ -92,6 +91,16 @@ export default function CreateUserPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>
+                  {/* @ts-expect-error server error */}
+                  {error?.data?.message ||
+                    "Failed to create user. Please try again."}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
@@ -214,10 +223,10 @@ export default function CreateUserPage() {
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading || !formik.isValid}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Creating..." : "Create User"}
+                  {isLoading ? "Creating..." : "Create User"}
                 </Button>
               </div>
             </form>
