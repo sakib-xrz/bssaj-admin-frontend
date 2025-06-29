@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -30,40 +30,11 @@ import { Plus, Search, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
-
-// Mock data - replace with actual API calls
-const mockUsers = [
-  {
-    id: "1",
-    name: "John Doe",
-    email: "john@example.com",
-    role: "STUDENT",
-    agency_id: null,
-    is_deleted: false,
-    created_at: "2024-01-15T10:30:00Z",
-    updated_at: "2024-01-15T10:30:00Z",
-  },
-  {
-    id: "2",
-    name: "Jane Smith",
-    email: "jane@agency.com",
-    role: "AGENCY",
-    agency_id: "agency-1",
-    is_deleted: false,
-    created_at: "2024-01-14T09:15:00Z",
-    updated_at: "2024-01-14T09:15:00Z",
-  },
-  {
-    id: "3",
-    name: "Mike Johnson",
-    email: "mike@example.com",
-    role: "ADMIN",
-    agency_id: null,
-    is_deleted: false,
-    created_at: "2024-01-13T14:45:00Z",
-    updated_at: "2024-01-13T14:45:00Z",
-  },
-];
+import { useGetUsersQuery } from "@/redux/features/user/userApi";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useDebounce } from "@/hooks/use-debounce";
+import { generateQueryString, sanitizeParams } from "@/lib/utils";
+import CustomPagination from "@/components/shared/custom-pagination";
 
 const roleColors = {
   STUDENT: "bg-blue-100 text-blue-800",
@@ -71,42 +42,67 @@ const roleColors = {
   ADMIN: "bg-purple-100 text-purple-800",
 };
 
-export default function UsersPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [users] = useState(mockUsers);
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  agency: null | {
+    id: string;
+    name: string;
+  };
+  created_at: string;
+}
 
-  const [selectedUser, setSelectedUser] = useState<
-    (typeof mockUsers)[0] | null
-  >(null);
+export default function UsersPage() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const initialParams = {
+    page: Number(searchParams.get("page")) || 1,
+    limit: Number(searchParams.get("limit")) || 20,
+    search: searchParams.get("search") || "",
+  };
+
+  const [params, setParams] = useState(initialParams);
+  const [searchInput, setSearchInput] = useState(initialParams.search);
+
+  // Debounce search query
+  const debouncedSearch = useDebounce(searchInput, 500);
+
+  // Update search param when debounced search changes
+  useEffect(() => {
+    setParams((prev) => ({ ...prev, search: debouncedSearch }));
+  }, [debouncedSearch]);
+
+  // Update URL when filters change
+  useEffect(() => {
+    const queryString = generateQueryString(params);
+    router.push(`/users${queryString}`);
+  }, [params, router]);
+
+  const { data, isLoading } = useGetUsersQuery(sanitizeParams(params));
+
+  const users = data?.data;
+
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  const filteredUsers = users.filter(
-    (user) =>
-      user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const handleDeleteUser = (user: (typeof mockUsers)[0]) => {
-    setSelectedUser(user);
-    setIsDeleteDialogOpen(true);
-  };
-
-  const confirmDelete = async () => {
-    if (!selectedUser) return;
-    setIsDeleting(true);
-    try {
-      console.log("Deleting user:", selectedUser.id);
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      // Remove user from list or refresh data
-    } catch (error) {
-      console.error("Error deleting user:", error);
-    } finally {
-      setIsDeleting(false);
-      setIsDeleteDialogOpen(false);
-      setSelectedUser(null);
+  // Handle pagination page change
+  const handlePageChange = (page: number) => {
+    if (
+      page < 1 ||
+      (data?.meta && page > Math.ceil(data?.meta.total / data?.meta.limit)) ||
+      page === params.page
+    ) {
+      return;
     }
+    setParams((prev) => ({ ...prev, page }));
+    window.scrollTo({ top: 0, behavior: "smooth" });
   };
+
+  if (isLoading) return <div>Loading...</div>;
 
   return (
     <Container>
@@ -137,8 +133,8 @@ export default function UsersPage() {
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <Input
                   placeholder="Search users..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
+                  value={searchInput}
+                  onChange={(e) => setSearchInput(e.target.value)}
                   className="pl-10"
                 />
               </div>
@@ -147,7 +143,7 @@ export default function UsersPage() {
             <div className="rounded-md border">
               <Table>
                 <TableHeader>
-                  <TableRow>
+                  <TableRow className="whitespace-nowrap">
                     <TableHead>Name</TableHead>
                     <TableHead>Email</TableHead>
                     <TableHead>Role</TableHead>
@@ -157,8 +153,8 @@ export default function UsersPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredUsers.map((user) => (
-                    <TableRow key={user.id}>
+                  {users?.map((user: User) => (
+                    <TableRow key={user.id} className="whitespace-nowrap">
                       <TableCell className="font-medium">{user.name}</TableCell>
                       <TableCell>{user.email}</TableCell>
                       <TableCell>
@@ -167,13 +163,13 @@ export default function UsersPage() {
                             roleColors[user.role as keyof typeof roleColors]
                           }
                         >
-                          {user.role}
+                          {user.role.split("_").join(" ")}
                         </Badge>
                       </TableCell>
                       <TableCell>
-                        {user.agency_id ? (
+                        {user.agency ? (
                           <span className="text-sm text-gray-600">
-                            Agency Member
+                            {user.agency.name}
                           </span>
                         ) : (
                           <span className="text-sm text-gray-400">
@@ -182,7 +178,6 @@ export default function UsersPage() {
                         )}
                       </TableCell>
                       <TableCell>
-                        {/* {new Date(user.created_at).toLocaleDateString()} */}
                         {format(new Date(user.created_at), "dd MMM yyyy")}
                       </TableCell>
                       <TableCell className="text-right">
@@ -201,7 +196,10 @@ export default function UsersPage() {
                             </DropdownMenuItem>
                             <DropdownMenuItem
                               className="text-red-600"
-                              onClick={() => handleDeleteUser(user)}
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setIsDeleteDialogOpen(true);
+                              }}
                             >
                               <Trash2 className="mr-2 h-4 w-4" />
                               Delete User
@@ -214,13 +212,25 @@ export default function UsersPage() {
                 </TableBody>
               </Table>
             </div>
+
+            {/* Pagination */}
+            {data?.meta && data?.meta.total > 1 && (
+              <CustomPagination
+                params={{ page: params.page }}
+                totalPages={Math.ceil(data?.meta.total / params.limit)}
+                handlePageChange={handlePageChange}
+              />
+            )}
           </CardContent>
         </Card>
 
         <DeleteAlertDialog
           isOpen={isDeleteDialogOpen}
           onClose={() => setIsDeleteDialogOpen(false)}
-          onConfirm={confirmDelete}
+          onConfirm={() => {
+            setIsDeleting(true);
+            console.log("Deleting user:", selectedUser?.id);
+          }}
           title="Delete User"
           description="Are you sure you want to delete this user? This will permanently remove the user and all associated data."
           itemName={selectedUser?.name || ""}
