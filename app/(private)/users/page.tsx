@@ -26,8 +26,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Plus, Search, MoreHorizontal, Edit, Trash2, Eye } from "lucide-react";
-import { UserViewModal } from "./_components/user-view-modal";
+import { Plus, Search, MoreHorizontal, Edit, Trash2 } from "lucide-react";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
@@ -79,7 +78,6 @@ export default function UsersPage() {
   const [selectedUser, setSelectedUser] = useState<
     (typeof mockUsers)[0] | null
   >(null);
-  const [isViewModalOpen, setIsViewModalOpen] = useState(false);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
 
@@ -88,11 +86,6 @@ export default function UsersPage() {
       user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
-  const handleViewUser = (user: (typeof mockUsers)[0]) => {
-    setSelectedUser(user);
-    setIsViewModalOpen(true);
-  };
 
   const handleDeleteUser = (user: (typeof mockUsers)[0]) => {
     setSelectedUser(user);
@@ -200,12 +193,6 @@ export default function UsersPage() {
                             </Button>
                           </DropdownMenuTrigger>
                           <DropdownMenuContent align="end">
-                            <DropdownMenuItem
-                              onClick={() => handleViewUser(user)}
-                            >
-                              <Eye className="mr-2 h-4 w-4" />
-                              View Details
-                            </DropdownMenuItem>
                             <DropdownMenuItem asChild>
                               <Link href={`/users/edit/${user.id}`}>
                                 <Edit className="mr-2 h-4 w-4" />
@@ -229,12 +216,6 @@ export default function UsersPage() {
             </div>
           </CardContent>
         </Card>
-
-        <UserViewModal
-          user={selectedUser}
-          isOpen={isViewModalOpen}
-          onClose={() => setIsViewModalOpen(false)}
-        />
 
         <DeleteAlertDialog
           isOpen={isDeleteDialogOpen}

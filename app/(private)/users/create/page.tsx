@@ -39,7 +39,6 @@ const userSchema = Yup.object({
     .oneOf(["STUDENT", "AGENCY", "ADMIN"], "Invalid role")
     .required("Role is required"),
   address: Yup.string(),
-  current_study_info: Yup.string(),
 });
 
 export default function CreateUserPage() {
@@ -52,7 +51,6 @@ export default function CreateUserPage() {
       password: "",
       role: "",
       address: "",
-      current_study_info: "",
     },
     validationSchema: userSchema,
     onSubmit: async (values) => {
@@ -183,9 +181,10 @@ export default function CreateUserPage() {
                       <SelectValue placeholder="Select role" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="STUDENT">Student</SelectItem>
-                      <SelectItem value="AGENCY">Agency</SelectItem>
                       <SelectItem value="ADMIN">Admin</SelectItem>
+                      <SelectItem value="AGENCY">Agency</SelectItem>
+                      <SelectItem value="STUDENT">Student</SelectItem>
+                      <SelectItem value="USER">User</SelectItem>
                     </SelectContent>
                   </Select>
                   {formik.touched.role && formik.errors.role && (
@@ -201,21 +200,6 @@ export default function CreateUserPage() {
                   name="address"
                   placeholder="Enter address"
                   value={formik.values.address}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  rows={3}
-                />
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="current_study_info">
-                  Current Study Information
-                </Label>
-                <Textarea
-                  id="current_study_info"
-                  name="current_study_info"
-                  placeholder="Enter current study information"
-                  value={formik.values.current_study_info}
                   onChange={formik.handleChange}
                   onBlur={formik.handleBlur}
                   rows={3}
