@@ -30,7 +30,7 @@ const userLogin = async (payload: UserLoginPayload) => {
 
     if (access_token) {
       await setTokenAndRedirect(access_token, {
-        redirect: existingRedirectURL || "/",
+        redirect: existingRedirectURL || "/dashboard",
       });
     }
 
