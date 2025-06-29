@@ -14,8 +14,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useState } from "react";
 import { Sheet, SheetContent } from "@/components/ui/sheet";
 import { SidebarContent } from "./sidebar";
+import { useRouter } from "next/navigation";
 
 export function Header() {
+  const router = useRouter();
   const [open, setOpen] = useState(false);
 
   return (
@@ -70,7 +72,7 @@ export function Header() {
                 <span>Settings</span>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
-              <DropdownMenuItem>
+              <DropdownMenuItem onClick={() => router.push("/logout")}>
                 <LogOut className="mr-2 h-4 w-4" />
                 <span>Log out</span>
               </DropdownMenuItem>
