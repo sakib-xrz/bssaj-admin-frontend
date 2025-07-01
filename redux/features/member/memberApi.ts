@@ -18,6 +18,13 @@ export const memberApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.member],
     }),
+    getMemberStats: builder.query({
+      query: () => ({
+        url: `/members/stats`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.member],
+    }),
     createMember: builder.mutation({
       query: (data) => ({
         url: `/members`,
@@ -55,6 +62,7 @@ export const memberApi = baseApi.injectEndpoints({
 export const {
   useGetMembersQuery,
   useGetMemberByIdQuery,
+  useGetMemberStatsQuery,
   useCreateMemberMutation,
   useUpdateMemberMutation,
   useApproveOrRejectMemberMutation,

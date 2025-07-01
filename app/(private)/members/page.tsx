@@ -50,6 +50,7 @@ import {
   useGetMembersQuery,
   useDeleteMemberMutation,
   useApproveOrRejectMemberMutation,
+  useGetMemberStatsQuery,
 } from "@/redux/features/member/memberApi";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/use-debounce";
@@ -122,8 +123,11 @@ export default function MembersPage() {
   }, [params, router]);
 
   const { data, isLoading } = useGetMembersQuery(sanitizeParams(params));
+  const { data: statsData, isLoading: isStatsLoading } =
+    useGetMemberStatsQuery(undefined);
 
   const members = data?.data;
+  const stats = statsData?.data;
 
   const [selectedMember, setSelectedMember] = useState<Member | null>(null);
   const [isViewModalOpen, setIsViewModalOpen] = useState(false);
@@ -131,12 +135,6 @@ export default function MembersPage() {
 
   const [deleteMember, { isLoading: isDeleting }] = useDeleteMemberMutation();
   const [approveOrRejectMember] = useApproveOrRejectMemberMutation();
-
-  // Calculate stats from API data
-  const approvedMembersCount =
-    members?.filter((m: Member) => m.approved_at && !m.is_deleted).length || 0;
-  const pendingApprovalCount =
-    members?.filter((m: Member) => !m.approved_at && !m.is_deleted).length || 0;
 
   // Handle pagination page change
   const handlePageChange = (page: number) => {
@@ -187,7 +185,7 @@ export default function MembersPage() {
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isStatsLoading) {
     return (
       <Container>
         <div className="space-y-6">
@@ -262,19 +260,19 @@ export default function MembersPage() {
           {[
             {
               label: "Total Members",
-              count: members?.length || 0,
+              count: stats?.total_members || 0,
               color: "text-blue-600",
               icon: UserCheck,
             },
             {
               label: "Approved Members",
-              count: approvedMembersCount,
+              count: stats?.total_approved_members || 0,
               color: "text-purple-600",
               icon: CheckCircle,
             },
             {
               label: "Pending Approval",
-              count: pendingApprovalCount,
+              count: stats?.total_pending_members || 0,
               color: "text-orange-600",
               icon: Clock,
             },
