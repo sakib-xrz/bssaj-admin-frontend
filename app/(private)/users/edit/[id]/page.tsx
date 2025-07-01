@@ -83,8 +83,6 @@ export default function EditUserPage() {
     return <div>Loading...</div>;
   }
 
-  console.log(formik.values);
-
   return (
     <Container>
       <div className="space-y-6">
@@ -162,6 +160,7 @@ export default function EditUserPage() {
               <div className="space-y-2">
                 <Label htmlFor="role">Role *</Label>
                 <Select
+                  key={userData?.data?.role}
                   value={formik.values.role}
                   onValueChange={(value) => formik.setFieldValue("role", value)}
                 >

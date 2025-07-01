@@ -29,9 +29,16 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { Badge } from "@/components/ui/badge";
+import {
+  useGetMemberByIdQuery,
+  useUpdateMemberMutation,
+  useApproveOrRejectMemberMutation,
+} from "@/redux/features/member/memberApi";
+import { toast } from "sonner";
+import { format } from "date-fns";
 
 const memberSchema = Yup.object({
   name: Yup.string()
@@ -52,50 +59,41 @@ const memberKinds = [
   { value: "STUDENT_REPRESENTATIVE", label: "Student Representative" },
 ];
 
-// Mock member data - replace with actual API call
-const mockMember = {
-  id: "1",
-  user_id: "1",
-  name: "Dr. Ahmed Rahman",
-  email: "ahmed.rahman@example.com",
-  phone: "+81-90-1234-5678",
-  kind: "EXECUTIVE",
-  is_deleted: false,
-  approved_at: "2024-01-16T10:30:00Z",
-  approved_by_id: "admin1",
-  created_at: "2024-01-15T10:30:00Z",
-  updated_at: "2024-01-15T10:30:00Z",
-  approved_by: {
-    name: "Admin User",
-  },
-};
-
 export default function EditMemberPage() {
   const params = useParams();
+  const router = useRouter();
   const memberId = params.id as string;
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const [isApproving, setIsApproving] = useState(false);
-  const [member, setMember] = useState(mockMember);
+
+  // Fetch member data
+  const { data: memberData, isLoading } = useGetMemberByIdQuery(memberId);
+  const [updateMember] = useUpdateMemberMutation();
+  const [approveOrRejectMember] = useApproveOrRejectMemberMutation();
+
+  const member = memberData?.data;
 
   const formik = useFormik({
     initialValues: {
-      name: member.name,
-      email: member.email,
-      phone: member.phone,
-      kind: member.kind,
+      name: member?.name || "",
+      email: member?.email || "",
+      phone: member?.phone || "",
+      kind: member?.kind || "",
     },
     validationSchema: memberSchema,
     enableReinitialize: true,
     onSubmit: async (values) => {
-      setIsSubmitting(true);
       try {
-        console.log("Updating member:", memberId, values);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // Redirect to members list or show success message
+        await updateMember({
+          id: memberId,
+          data: values,
+        }).unwrap();
+
+        toast.success("Member updated successfully");
+        router.push("/members");
       } catch (error) {
         console.error("Error updating member:", error);
-      } finally {
-        setIsSubmitting(false);
+        toast.error("Failed to update member");
       }
     },
   });
@@ -103,23 +101,27 @@ export default function EditMemberPage() {
   const handleApprove = async () => {
     setIsApproving(true);
     try {
-      console.log("Approving member:", memberId);
-      // Update local state to reflect approval
-      setMember((prev) => ({
-        ...prev,
-        approved_at: new Date().toISOString(),
-        approved_by_id: "current_admin_id", // Replace with actual admin ID
-        approved_by: {
-          name: "Current Admin", // Replace with actual admin name
-        },
-      }));
-      // API call to approve member would go here
+      await approveOrRejectMember({
+        id: memberId,
+        data: { approved: true },
+      }).unwrap();
+
+      toast.success("Member approved successfully");
     } catch (error) {
       console.error("Error approving member:", error);
+      toast.error("Failed to approve member");
     } finally {
       setIsApproving(false);
     }
   };
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+
+  if (!member) {
+    return <div>Member not found</div>;
+  }
 
   return (
     <Container>
@@ -202,7 +204,9 @@ export default function EditMemberPage() {
                     />
                   </div>
                   {formik.touched.name && formik.errors.name && (
-                    <p className="text-sm text-red-500">{formik.errors.name}</p>
+                    <p className="text-sm text-red-500">
+                      {formik.errors.name as string}
+                    </p>
                   )}
                 </div>
 
@@ -227,7 +231,7 @@ export default function EditMemberPage() {
                   </div>
                   {formik.touched.email && formik.errors.email && (
                     <p className="text-sm text-red-500">
-                      {formik.errors.email}
+                      {formik.errors.email as string}
                     </p>
                   )}
                 </div>
@@ -254,7 +258,7 @@ export default function EditMemberPage() {
                   </div>
                   {formik.touched.phone && formik.errors.phone && (
                     <p className="text-sm text-red-500">
-                      {formik.errors.phone}
+                      {formik.errors.phone as string}
                     </p>
                   )}
                 </div>
@@ -262,6 +266,7 @@ export default function EditMemberPage() {
                 <div className="space-y-2">
                   <Label htmlFor="kind">Member Kind *</Label>
                   <Select
+                    key={`member-kind-${member?.id}-${member?.kind}`}
                     value={formik.values.kind}
                     onValueChange={(value) =>
                       formik.setFieldValue("kind", value)
@@ -288,7 +293,9 @@ export default function EditMemberPage() {
                     </SelectContent>
                   </Select>
                   {formik.touched.kind && formik.errors.kind && (
-                    <p className="text-sm text-red-500">{formik.errors.kind}</p>
+                    <p className="text-sm text-red-500">
+                      {formik.errors.kind as string}
+                    </p>
                   )}
                 </div>
               </div>
@@ -300,13 +307,13 @@ export default function EditMemberPage() {
                 <ul className="text-sm text-blue-800 space-y-1">
                   <li>
                     • Member created on:{" "}
-                    {new Date(member.created_at).toLocaleDateString()}
+                    {format(new Date(member.created_at), "dd MMM yyyy")}
                   </li>
                   <li>
                     • Last updated:{" "}
-                    {new Date(member.updated_at).toLocaleDateString()}
+                    {format(new Date(member.updated_at), "dd MMM yyyy")}
                   </li>
-                  <li>• User ID: {member.user_id}</li>
+                  <li>• User ID: {member.user?.id}</li>
                 </ul>
               </div>
 
@@ -318,10 +325,9 @@ export default function EditMemberPage() {
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Updating Member..." : "Update Member"}
+                  Update Member
                 </Button>
               </div>
             </form>
