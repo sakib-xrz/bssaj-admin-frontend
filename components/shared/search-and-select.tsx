@@ -47,6 +47,7 @@ interface DynamicSearchSelectProps extends BaseSearchSelectProps {
   searchParams?: Record<string, unknown>;
   transformData: (data: unknown) => Option[];
   debounceMs?: number;
+  selectedOptionLabel?: string; // Add this to allow external control of selected display
 }
 
 type SearchSelectProps = StaticSearchSelectProps | DynamicSearchSelectProps;
@@ -133,10 +134,12 @@ function DynamicSearchSelect({
   transformData,
   debounceMs = 300,
   emptyMessage = "No result found.",
+  selectedOptionLabel,
 }: DynamicSearchSelectProps) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [selectedOption, setSelectedOption] = useState<Option | null>(null);
 
   // Debounce search term for API calls
   const debouncedSearchTerm = useDebounce(searchTerm, debounceMs);
@@ -160,6 +163,22 @@ function DynamicSearchSelect({
     return transformData(searchResult.data);
   }, [searchResult?.data, transformData]);
 
+  // Update selectedOption when value changes - maintain selection even if not in current options
+  useEffect(() => {
+    if (value) {
+      // Only update if we don't have a selectedOption or if the value actually changed
+      if (!selectedOption || selectedOption.value !== value) {
+        const foundOption = options.find((option) => option.value === value);
+        if (foundOption) {
+          setSelectedOption(foundOption);
+        }
+        // Don't clear selectedOption if not found - it might be from a previous search
+      }
+    } else {
+      setSelectedOption(null);
+    }
+  }, [value, selectedOption, options]);
+
   // Clear search when popover closes
   useEffect(() => {
     if (!open) {
@@ -181,7 +200,9 @@ function DynamicSearchSelect({
           >
             <span className={cn("truncate", !value && "text-muted-foreground")}>
               {value
-                ? options.find((option) => option.value === value)?.label
+                ? selectedOptionLabel ||
+                  selectedOption?.label ||
+                  "Selected item"
                 : placeholder}
             </span>
             {isLoading ? (
@@ -218,7 +239,13 @@ function DynamicSearchSelect({
                     key={option.value}
                     value={option.value}
                     onSelect={(currentValue) => {
-                      onChange(currentValue === value ? "" : currentValue);
+                      if (currentValue === value) {
+                        onChange("");
+                        setSelectedOption(null);
+                      } else {
+                        onChange(currentValue);
+                        setSelectedOption(option);
+                      }
                       setOpen(false);
                     }}
                   >

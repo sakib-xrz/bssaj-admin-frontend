@@ -57,8 +57,7 @@ const transformUserData = (
   const users = (data as { data: User[] }).data;
   if (!Array.isArray(users)) return [];
 
-  // Update the cache with user data for auto-filling
-  usersCache.clear();
+  // Update the cache with user data for auto-filling (don't clear existing cache)
   users.forEach((user: User) => {
     usersCache.set(user.id, user);
   });
@@ -158,6 +157,14 @@ export default function CreateMemberPage() {
                   useSearchQuery={useSearchUsersQuery}
                   searchParams={{ limit: 20 }}
                   transformData={transformUserData}
+                  selectedOptionLabel={
+                    formik.values.user_id &&
+                    usersCache.has(formik.values.user_id)
+                      ? `${usersCache.get(formik.values.user_id)!.name} (${
+                          usersCache.get(formik.values.user_id)!.email
+                        })`
+                      : undefined
+                  }
                   className={
                     formik.touched.user_id && formik.errors.user_id
                       ? "border-red-500"
