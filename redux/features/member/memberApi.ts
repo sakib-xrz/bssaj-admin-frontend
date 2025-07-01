@@ -4,9 +4,10 @@ import { tagTypes } from "@/redux/tagTypes";
 export const memberApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getMembers: builder.query({
-      query: () => ({
+      query: (query) => ({
         url: `/members`,
         method: "GET",
+        params: query,
       }),
       providesTags: [tagTypes.member],
     }),
@@ -35,7 +36,7 @@ export const memberApi = baseApi.injectEndpoints({
     }),
     approveOrRejectMember: builder.mutation({
       query: ({ data, id }) => ({
-        url: `/members/${id}`,
+        url: `/admin/approve-reject-member/${id}`,
         method: "PUT",
         body: data,
       }),
