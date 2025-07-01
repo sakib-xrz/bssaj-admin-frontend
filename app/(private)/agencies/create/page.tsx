@@ -15,9 +15,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ArrowLeft, Upload } from "lucide-react";
+import { ArrowLeft, Upload, X } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Container from "@/components/shared/container";
 
 const agencySchema = Yup.object({
@@ -31,18 +31,32 @@ const agencySchema = Yup.object({
   website: Yup.string().url("Invalid URL format"),
   director_name: Yup.string(),
   established_year: Yup.number()
+    .typeError("Established year must be a number")
     .min(1900, "Invalid year")
-    .max(new Date().getFullYear(), "Year cannot be in the future"),
+    .max(new Date().getFullYear(), "Year cannot be in the future")
+    .nullable(),
   description: Yup.string(),
   address: Yup.string(),
   facebook_url: Yup.string().url("Invalid URL format"),
-  message_from_director: Yup.string(),
-  services_offered: Yup.string(),
 });
 
 export default function CreateAgencyPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [successStoryImages, setSuccessStoryImages] = useState<File[]>([]);
+  const [successStoryPreviews, setSuccessStoryPreviews] = useState<string[]>(
+    []
+  );
+
+  useEffect(() => {
+    return () => {
+      if (logoPreview) {
+        URL.revokeObjectURL(logoPreview);
+      }
+      successStoryPreviews.forEach((url) => URL.revokeObjectURL(url));
+    };
+  }, [logoPreview, successStoryPreviews]);
 
   const formik = useFormik({
     initialValues: {
@@ -55,18 +69,84 @@ export default function CreateAgencyPage() {
       description: "",
       address: "",
       facebook_url: "",
-      message_from_director: "",
-      services_offered: "",
     },
     validationSchema: agencySchema,
     onSubmit: async (values) => {
       setIsSubmitting(true);
       try {
-        // API call would go here
-        console.log("Creating agency:", values, "Logo:", logoFile);
+        const formData = new FormData();
+
+        // Append text fields
+        for (const key in values) {
+          if (Object.prototype.hasOwnProperty.call(values, key)) {
+            const value = values[key as keyof typeof values]; // Type assertion
+            // Convert established_year to number if it exists and is not empty
+            if (key === "established_year") {
+              if (value) {
+                formData.append(key, String(Number(value))); // Append as string number
+              }
+            } else if (value !== null && value !== undefined) {
+              formData.append(key, value);
+            }
+          }
+        }
+
+        // Append logo file
+        if (logoFile) {
+          formData.append("logo", logoFile);
+        }
+
+        // Append success story images
+        successStoryImages.forEach((file, index) => {
+          formData.append(`successStoryImages[${index}]`, file);
+          // Or if your backend expects a simple array of files without indices:
+          // formData.append('successStoryImages', file);
+        });
+
+        // Add static status fields
+        formData.append("status", "PENDING");
+        formData.append("is_approved", "false"); // FormData appends booleans as strings
+        formData.append("is_deleted", "false"); // FormData appends booleans as strings
+
+        // Log FormData contents for debugging (optional)
+        // You cannot directly console.log a FormData object like a regular object.
+        // You need to iterate over it:
+        console.log("FormData contents:");
+        for (const pair of Array.from(formData.entries())) {
+          console.log(pair[0] + ": " + pair[1]);
+        }
+
+        // --- Replace the simulated API call with a real fetch or axios call ---
+        // Example with fetch:
+        // const response = await fetch('/api/agencies', { // Replace with your actual API endpoint
+        //   method: 'POST',
+        //   body: formData,
+        //   // Do NOT set Content-Type header; browser will set it correctly with boundary
+        // });
+
+        // if (!response.ok) {
+        //   throw new Error(`HTTP error! status: ${response.status}`);
+        // }
+
+        // const result = await response.json();
+        // console.log("Agency created successfully:", result);
+        // ---------------------------------------------------------------------
+
+        // Simulate API call for now
         await new Promise((resolve) => setTimeout(resolve, 1000));
+        console.log("Creating agency with FormData (simulated)");
+
+        formik.resetForm();
+        if (logoPreview) URL.revokeObjectURL(logoPreview);
+        setLogoFile(null);
+        setLogoPreview(null);
+        successStoryPreviews.forEach((url) => URL.revokeObjectURL(url));
+        setSuccessStoryImages([]);
+        setSuccessStoryPreviews([]);
+        alert("Agency created successfully! (Simulated)");
       } catch (error) {
         console.error("Error creating agency:", error);
+        alert("Failed to create agency. Please try again.");
       } finally {
         setIsSubmitting(false);
       }
@@ -75,9 +155,38 @@ export default function CreateAgencyPage() {
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
-    if (file) {
-      setLogoFile(file);
+    if (logoPreview) {
+      URL.revokeObjectURL(logoPreview);
     }
+    if (file) {
+      const previewUrl = URL.createObjectURL(file);
+      setLogoPreview(previewUrl);
+      setLogoFile(file);
+    } else {
+      setLogoPreview(null);
+      setLogoFile(null);
+    }
+  };
+
+  const handleSuccessStoryImagesChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const selectedFiles = Array.from(event.target.files || []);
+
+    const newPreviews = selectedFiles.map((file) => URL.createObjectURL(file));
+
+    setSuccessStoryPreviews((prev) => [...prev, ...newPreviews]);
+    setSuccessStoryImages((prev) => [...prev, ...selectedFiles]);
+
+    // Clear the input value to allow selecting the same file(s) again
+    event.target.value = "";
+  };
+
+  const handleRemoveSuccessStory = (index: number) => {
+    URL.revokeObjectURL(successStoryPreviews[index]);
+
+    setSuccessStoryPreviews((prev) => prev.filter((_, i) => i !== index));
+    setSuccessStoryImages((prev) => prev.filter((_, i) => i !== index));
   };
 
   return (
@@ -149,7 +258,7 @@ export default function CreateAgencyPage() {
 
                 <div className="space-y-2">
                   <Label htmlFor="logo">Agency Logo</Label>
-                  <div className="flex items-center">
+                  <div className="flex flex-col gap-4">
                     <Input
                       id="logo"
                       type="file"
@@ -157,18 +266,36 @@ export default function CreateAgencyPage() {
                       onChange={handleLogoChange}
                       className="hidden"
                     />
-                    <Button
-                      type="button"
-                      variant="outline"
-                      onClick={() => document.getElementById("logo")?.click()}
-                    >
-                      <Upload className="w-4 h-4 mr-2" />
-                      Upload Logo
-                    </Button>
-                    {logoFile && (
-                      <span className="text-sm text-gray-600">
-                        {logoFile.name}
-                      </span>
+                    {logoPreview ? (
+                      <div className="relative w-40 h-40">
+                        <img
+                          src={logoPreview}
+                          alt="Logo preview"
+                          className="w-full h-full object-cover rounded-lg"
+                        />
+                        <Button
+                          type="button"
+                          variant="destructive"
+                          size="icon"
+                          className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                          onClick={() => {
+                            URL.revokeObjectURL(logoPreview);
+                            setLogoPreview(null);
+                            setLogoFile(null);
+                          }}
+                        >
+                          <X className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    ) : (
+                      <Button
+                        type="button"
+                        variant="outline"
+                        onClick={() => document.getElementById("logo")?.click()}
+                      >
+                        <Upload className="w-4 h-4 mr-2" />
+                        Upload Logo
+                      </Button>
                     )}
                   </div>
                 </div>
@@ -319,38 +446,59 @@ export default function CreateAgencyPage() {
                 </div>
               </div>
 
-              {/* Additional Information */}
+              {/* Success Stories */}
               <div className="space-y-4">
                 <h3 className="text-lg font-semibold text-gray-900">
-                  Additional Information
+                  Success Stories
                 </h3>
 
                 <div className="space-y-2">
-                  <Label htmlFor="services_offered">Services Offered</Label>
-                  <Textarea
-                    id="services_offered"
-                    name="services_offered"
-                    placeholder="Describe the services offered by the agency"
-                    value={formik.values.services_offered}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    rows={4}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="message_from_director">
-                    Message from Director
-                  </Label>
-                  <Textarea
-                    id="message_from_director"
-                    name="message_from_director"
-                    placeholder="Enter message from director"
-                    value={formik.values.message_from_director}
-                    onChange={formik.handleChange}
-                    onBlur={formik.handleBlur}
-                    rows={4}
-                  />
+                  <Label htmlFor="success_stories">Success Story Images</Label>
+                  <div className="flex flex-col gap-4">
+                    <Input
+                      id="success_stories"
+                      type="file"
+                      accept="image/*"
+                      multiple
+                      onChange={handleSuccessStoryImagesChange}
+                      className="hidden"
+                    />
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() =>
+                        document.getElementById("success_stories")?.click()
+                      }
+                    >
+                      <Upload className="w-4 h-4 mr-2" />
+                      Upload Success Story Images
+                    </Button>
+                    {successStoryImages.length > 0 && (
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
+                        {successStoryImages.map((file, index) => (
+                          <div
+                            key={file.name + index}
+                            className="relative w-full aspect-square"
+                          >
+                            <img
+                              src={successStoryPreviews[index]}
+                              alt={`Success story ${index + 1}`}
+                              className="w-full h-full object-cover rounded-lg"
+                            />
+                            <Button
+                              type="button"
+                              variant="destructive"
+                              size="icon"
+                              className="absolute -top-2 -right-2 h-6 w-6 rounded-full"
+                              onClick={() => handleRemoveSuccessStory(index)}
+                            >
+                              <X className="h-4 w-4" />
+                            </Button>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
 
