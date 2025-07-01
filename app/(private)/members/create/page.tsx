@@ -23,6 +23,16 @@ import { ArrowLeft, User, Mail, Phone, Shield } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import Container from "@/components/shared/container";
+import { SearchSelect } from "@/components/shared/search-and-select";
+import { useSearchUsersQuery } from "@/redux/features/user/userApi";
+
+// Define the User interface for type safety
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+}
 
 const memberSchema = Yup.object({
   user_id: Yup.string().required("User is required"),
@@ -36,33 +46,28 @@ const memberSchema = Yup.object({
   kind: Yup.string().required("Member kind is required"),
 });
 
-// Mock users data - replace with actual API call (users who are not already members)
-const mockAvailableUsers = [
-  {
-    id: "5",
-    name: "Dr. Karim Hassan",
-    email: "karim.hassan@example.com",
-    role: "STUDENT",
-  },
-  {
-    id: "6",
-    name: "Ms. Nadia Islam",
-    email: "nadia.islam@example.com",
-    role: "STUDENT",
-  },
-  {
-    id: "7",
-    name: "Mr. Tariq Ahmed",
-    email: "tariq.ahmed@example.com",
-    role: "AGENCY",
-  },
-  {
-    id: "8",
-    name: "Dr. Salma Khatun",
-    email: "salma.khatun@example.com",
-    role: "STUDENT",
-  },
-];
+// Store user data for auto-filling form fields
+const usersCache: Map<string, User> = new Map();
+
+// Transform user data for SearchSelect component
+const transformUserData = (
+  data: unknown
+): Array<{ label: string; value: string }> => {
+  if (!data || typeof data !== "object" || !("data" in data)) return [];
+  const users = (data as { data: User[] }).data;
+  if (!Array.isArray(users)) return [];
+
+  // Update the cache with user data for auto-filling
+  usersCache.clear();
+  users.forEach((user: User) => {
+    usersCache.set(user.id, user);
+  });
+
+  return users.map((user: User) => ({
+    label: `${user.name} (${user.email})`,
+    value: user.id,
+  }));
+};
 
 const memberKinds = [
   { value: "ADVISER", label: "Adviser" },
@@ -74,7 +79,6 @@ const memberKinds = [
 
 export default function CreateMemberPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [availableUsers] = useState(mockAvailableUsers);
 
   const formik = useFormik({
     initialValues: {
@@ -101,9 +105,18 @@ export default function CreateMemberPage() {
 
   // Auto-fill name and email when user is selected
   const handleUserSelect = (userId: string) => {
-    const selectedUser = availableUsers.find((user) => user.id === userId);
+    formik.setFieldValue("user_id", userId);
+
+    if (!userId) {
+      // Clear form fields if no user is selected
+      formik.setFieldValue("name", "");
+      formik.setFieldValue("email", "");
+      return;
+    }
+
+    // Get user data from cache and auto-fill form
+    const selectedUser = usersCache.get(userId);
     if (selectedUser) {
-      formik.setFieldValue("user_id", userId);
       formik.setFieldValue("name", selectedUser.name);
       formik.setFieldValue("email", selectedUser.email);
     }
@@ -137,33 +150,21 @@ export default function CreateMemberPage() {
           <CardContent>
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="space-y-2">
-                <Label htmlFor="user_id">Select User *</Label>
-                <Select
+                <SearchSelect
+                  label="Select User *"
+                  placeholder="Type to search for users..."
                   value={formik.values.user_id}
-                  onValueChange={handleUserSelect}
-                >
-                  <SelectTrigger
-                    className={
-                      formik.touched.user_id && formik.errors.user_id
-                        ? "border-red-500"
-                        : ""
-                    }
-                  >
-                    <SelectValue placeholder="Select a user to make them a member" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {availableUsers.map((user) => (
-                      <SelectItem key={user.id} value={user.id}>
-                        <div className="flex items-center space-x-2">
-                          <User className="w-4 h-4" />
-                          <span>
-                            {user.name} ({user.email}) - {user.role}
-                          </span>
-                        </div>
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  onChange={handleUserSelect}
+                  useSearchQuery={useSearchUsersQuery}
+                  searchParams={{ limit: 20 }}
+                  transformData={transformUserData}
+                  className={
+                    formik.touched.user_id && formik.errors.user_id
+                      ? "border-red-500"
+                      : ""
+                  }
+                  emptyMessage="No users found matching your search"
+                />
                 {formik.touched.user_id && formik.errors.user_id && (
                   <p className="text-sm text-red-500">
                     {formik.errors.user_id}
