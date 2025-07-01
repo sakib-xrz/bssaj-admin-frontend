@@ -21,10 +21,13 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, User, Mail, Phone, Shield } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { SearchSelect } from "@/components/shared/search-and-select";
 import { useSearchUsersQuery } from "@/redux/features/user/userApi";
+import { useCreateMemberMutation } from "@/redux/features/member/memberApi";
+import { toast } from "sonner";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 // Define the User interface for type safety
 interface User {
@@ -77,7 +80,9 @@ const memberKinds = [
 ];
 
 export default function CreateMemberPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const router = useRouter();
+  const [createMember, { isLoading, isError, error }] =
+    useCreateMemberMutation();
 
   const formik = useFormik({
     initialValues: {
@@ -89,15 +94,16 @@ export default function CreateMemberPage() {
     },
     validationSchema: memberSchema,
     onSubmit: async (values) => {
-      setIsSubmitting(true);
       try {
-        console.log("Creating member:", values);
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        // Redirect to members list or show success message
+        const result = await createMember(values).unwrap();
+        console.log("Member created successfully:", result);
+
+        // Redirect to members list
+        router.push("/members");
+        toast.success("Member created successfully");
       } catch (error) {
         console.error("Error creating member:", error);
-      } finally {
-        setIsSubmitting(false);
+        toast.error("Failed to create member");
       }
     },
   });
@@ -147,6 +153,16 @@ export default function CreateMemberPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>
+                  {/* @ts-expect-error server error */}
+                  {error?.data?.message ||
+                    "Failed to create member. Please try again."}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               <div className="space-y-2">
                 <SearchSelect
@@ -320,16 +336,16 @@ export default function CreateMemberPage() {
 
               <div className="flex justify-end space-x-4">
                 <Link href="/members">
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" disabled={isLoading}>
                     Cancel
                   </Button>
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading || !formik.isValid}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Adding Member..." : "Add Member"}
+                  {isLoading ? "Adding Member..." : "Add Member"}
                 </Button>
               </div>
             </form>
