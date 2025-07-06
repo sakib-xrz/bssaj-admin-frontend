@@ -173,15 +173,6 @@ export function MemberViewModal({
                         ]
                       }
                     </Badge>
-                    <Badge
-                      className={
-                        member.is_deleted
-                          ? "bg-red-100 text-red-800"
-                          : "bg-green-100 text-green-800"
-                      }
-                    >
-                      {member.is_deleted ? "Inactive" : "Active"}
-                    </Badge>
                     {member.approved_at ? (
                       <Badge className="bg-emerald-100 text-emerald-800">
                         <CheckCircle className="w-3 h-3 mr-1" />

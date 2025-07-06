@@ -431,43 +431,52 @@ export default function AgenciesPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => handleViewAgency(agency)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              {agency.status === "PENDING" && (
+                              {!agency.approved_at && !agency.is_deleted ? (
                                 <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleViewAgency(agency)}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleApprove(agency)}
                                     className="text-green-600"
                                   >
                                     <Check className="mr-2 h-4 w-4" />
-                                    Approve
+                                    Approve Agency
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleReject(agency)}
                                     className="text-red-600"
                                   >
                                     <X className="mr-2 h-4 w-4" />
-                                    Reject
+                                    Reject Agency
+                                  </DropdownMenuItem>
+                                </>
+                              ) : (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleViewAgency(agency)}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem asChild>
+                                    <Link href={`/agencies/edit/${agency.id}`}>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      Edit Agency
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    onClick={() => handleDeleteAgency(agency)}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete Permanently
                                   </DropdownMenuItem>
                                 </>
                               )}
-                              <DropdownMenuItem asChild>
-                                <Link href={`/agencies/edit/${agency.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit Agency
-                                </Link>
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => handleDeleteAgency(agency)}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete Agency
-                              </DropdownMenuItem>
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
