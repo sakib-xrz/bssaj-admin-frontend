@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -29,7 +30,6 @@ import {
   Plus,
   Search,
   MoreHorizontal,
-  Edit,
   Trash2,
   Eye,
   ExternalLink,
@@ -131,6 +131,12 @@ export default function AgenciesPage() {
 
   const [deleteAgency, { isLoading: isDeleting }] = useDeleteAgencyMutation();
   const [approveOrRejectAgency] = useApproveOrRejectAgencyMutation();
+
+  const [imageErrors, setImageErrors] = useState<Set<string>>(new Set());
+
+  const handleImageError = (agencyId: string) => {
+    setImageErrors((prev) => new Set(prev).add(agencyId));
+  };
 
   // Handle pagination page change
   const handlePageChange = (page: number) => {
@@ -336,13 +342,25 @@ export default function AgenciesPage() {
                       >
                         <TableCell>
                           <div className="flex items-center space-x-3">
-                            <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
-                              {agency.name
-                                .split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .toUpperCase()}
-                            </div>
+                            {agency.logo && !imageErrors.has(agency.id) ? (
+                              <div className="w-10 h-10 rounded-full overflow-hidden flex-shrink-0 relative">
+                                <Image
+                                  src={agency.logo}
+                                  alt={`${agency.name} logo`}
+                                  fill
+                                  className="object-cover"
+                                  onError={() => handleImageError(agency.id)}
+                                />
+                              </div>
+                            ) : (
+                              <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
+                                {agency.name
+                                  .split(" ")
+                                  .map((n) => n[0])
+                                  .join("")
+                                  .toUpperCase()}
+                              </div>
+                            )}
                             <div>
                               <div className="font-medium">{agency.name}</div>
                               <div className="text-sm text-gray-500">
@@ -461,12 +479,6 @@ export default function AgenciesPage() {
                                   >
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
-                                  </DropdownMenuItem>
-                                  <DropdownMenuItem asChild>
-                                    <Link href={`/agencies/edit/${agency.id}`}>
-                                      <Edit className="mr-2 h-4 w-4" />
-                                      Edit Agency
-                                    </Link>
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     className="text-red-600"

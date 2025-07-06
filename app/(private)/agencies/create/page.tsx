@@ -15,12 +15,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { useCreateAgencyMutation } from "@/redux/features/agency/agencyApi";
+import { toast } from "sonner";
 
 const agencySchema = Yup.object({
   name: Yup.string()
@@ -43,7 +46,9 @@ const agencySchema = Yup.object({
 });
 
 export default function CreateAgencyPage() {
-  const [createAgency, { isLoading }] = useCreateAgencyMutation();
+  const router = useRouter();
+  const [createAgency, { isLoading, isError, error }] =
+    useCreateAgencyMutation();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [successStoryImages, setSuccessStoryImages] = useState<File[]>([]);
@@ -108,16 +113,11 @@ export default function CreateAgencyPage() {
         formData.append("is_approved", "false");
         formData.append("is_deleted", "false");
 
-        // Log FormData contents for debugging (optional)
-        console.log("FormData contents:");
-        for (const pair of Array.from(formData.entries())) {
-          console.log(pair[0] + ": " + pair[1]);
-        }
-
-        // Use RTK Query mutation instead of manual fetch
+        // Use RTK Query mutation
         const result = await createAgency(formData).unwrap();
         console.log("Agency created successfully:", result);
 
+        // Success actions
         formik.resetForm();
         if (logoPreview) URL.revokeObjectURL(logoPreview);
         setLogoFile(null);
@@ -125,8 +125,13 @@ export default function CreateAgencyPage() {
         successStoryPreviews.forEach((url) => URL.revokeObjectURL(url));
         setSuccessStoryImages([]);
         setSuccessStoryPreviews([]);
+
+        // Navigate to agencies list
+        router.push("/agencies");
+        toast.success("Agency created successfully");
       } catch (error) {
         console.error("Error creating agency:", error);
+        toast.error("Failed to create agency");
       }
     },
   });
@@ -191,6 +196,16 @@ export default function CreateAgencyPage() {
             </CardDescription>
           </CardHeader>
           <CardContent>
+            {isError && (
+              <Alert variant="destructive" className="mb-6">
+                <AlertDescription>
+                  {/* @ts-expect-error server error */}
+                  {error?.data?.message ||
+                    "Failed to create agency. Please try again."}
+                </AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={formik.handleSubmit} className="space-y-6">
               {/* Basic Information */}
               <div className="space-y-4">
@@ -485,16 +500,16 @@ export default function CreateAgencyPage() {
 
               <div className="flex justify-end space-x-4">
                 <Link href="/agencies">
-                  <Button type="button" variant="outline">
+                  <Button type="button" variant="outline" disabled={isLoading}>
                     Cancel
                   </Button>
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isLoading}
+                  disabled={isLoading || !formik.isValid}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isLoading ? "Creating..." : "Create Agency"}
+                  {isLoading ? "Creating Agency..." : "Create Agency"}
                 </Button>
               </div>
             </form>

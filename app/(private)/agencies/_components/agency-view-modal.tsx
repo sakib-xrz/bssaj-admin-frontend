@@ -29,6 +29,8 @@ import {
 } from "lucide-react";
 import { format } from "date-fns";
 import { useGetAgencyByIdQuery } from "@/redux/features/agency/agencyApi";
+import { useState, useEffect } from "react";
+import Image from "next/image";
 
 interface AgencyViewModalProps {
   agencyId: string | null;
@@ -94,6 +96,8 @@ export function AgencyViewModal({
   isOpen,
   onClose,
 }: AgencyViewModalProps) {
+  const [imageError, setImageError] = useState(false);
+
   const {
     data: agencyData,
     isLoading,
@@ -104,6 +108,11 @@ export function AgencyViewModal({
   });
 
   const agency = agencyData?.data;
+
+  // Reset image error when modal opens with different agency
+  useEffect(() => {
+    setImageError(false);
+  }, [agencyId]);
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
@@ -140,13 +149,25 @@ export function AgencyViewModal({
             {/* Basic Information */}
             <div className="space-y-4">
               <div className="flex items-center space-x-4">
-                <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
-                  {agency.name
-                    .split(" ")
-                    .map((n: string) => n[0])
-                    .join("")
-                    .toUpperCase()}
-                </div>
+                {agency.logo && !imageError ? (
+                  <div className="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0 relative">
+                    <Image
+                      src={agency.logo}
+                      alt={`${agency.name} logo`}
+                      fill
+                      className="object-cover"
+                      onError={() => setImageError(true)}
+                    />
+                  </div>
+                ) : (
+                  <div className="w-16 h-16 bg-primary rounded-lg flex items-center justify-center text-white font-bold text-xl">
+                    {agency.name
+                      .split(" ")
+                      .map((n: string) => n[0])
+                      .join("")
+                      .toUpperCase()}
+                  </div>
+                )}
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{agency.name}</h3>
                   <div className="flex items-center space-x-2 mt-1 flex-wrap gap-1">
