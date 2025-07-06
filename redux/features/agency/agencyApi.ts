@@ -18,6 +18,13 @@ export const agencyApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.agency],
     }),
+    getAgencyStats: builder.query({
+      query: () => ({
+        url: `/agencies/stats`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.agency],
+    }),
     createAgency: builder.mutation({
       query: (data) => ({
         url: `/agencies`,
@@ -36,6 +43,14 @@ export const agencyApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.agency],
     }),
+    approveOrRejectAgency: builder.mutation({
+      query: ({ data, id }) => ({
+        url: `/admin/approve-reject-agency/${id}`,
+        method: "PUT",
+        body: data,
+      }),
+      invalidatesTags: [tagTypes.agency],
+    }),
     deleteAgency: builder.mutation({
       query: (id) => ({
         url: `/agencies/${id}`,
@@ -49,7 +64,9 @@ export const agencyApi = baseApi.injectEndpoints({
 export const {
   useGetAgenciesQuery,
   useGetAgencyByIdQuery,
+  useGetAgencyStatsQuery,
   useCreateAgencyMutation,
   useUpdateAgencyMutation,
+  useApproveOrRejectAgencyMutation,
   useDeleteAgencyMutation,
 } = agencyApi;
