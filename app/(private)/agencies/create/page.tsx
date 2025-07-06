@@ -17,8 +17,10 @@ import {
 } from "@/components/ui/card";
 import { ArrowLeft, Upload, X } from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { useState, useEffect } from "react";
 import Container from "@/components/shared/container";
+import { useCreateAgencyMutation } from "@/redux/features/agency/agencyApi";
 
 const agencySchema = Yup.object({
   name: Yup.string()
@@ -41,13 +43,15 @@ const agencySchema = Yup.object({
 });
 
 export default function CreateAgencyPage() {
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createAgency, { isLoading }] = useCreateAgencyMutation();
   const [logoFile, setLogoFile] = useState<File | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [successStoryImages, setSuccessStoryImages] = useState<File[]>([]);
   const [successStoryPreviews, setSuccessStoryPreviews] = useState<string[]>(
     []
   );
+
+  console.log(logoFile);
 
   useEffect(() => {
     return () => {
@@ -60,30 +64,28 @@ export default function CreateAgencyPage() {
 
   const formik = useFormik({
     initialValues: {
-      name: "",
-      contact_email: "",
-      contact_phone: "",
-      website: "",
-      director_name: "",
-      established_year: "",
-      description: "",
-      address: "",
-      facebook_url: "",
+      name: "Dev Agency",
+      contact_email: "dev@agency.com",
+      contact_phone: "1234567890",
+      website: "https://devagency.com",
+      director_name: "Dev Director",
+      established_year: "2025",
+      description: "Dev Agency Description",
+      address: "Dev Address",
+      facebook_url: "https://facebook.com/devagency",
     },
     validationSchema: agencySchema,
     onSubmit: async (values) => {
-      setIsSubmitting(true);
       try {
         const formData = new FormData();
 
-        // Append text fields
+        // Append user and agency fields
         for (const key in values) {
           if (Object.prototype.hasOwnProperty.call(values, key)) {
-            const value = values[key as keyof typeof values]; // Type assertion
-            // Convert established_year to number if it exists and is not empty
+            const value = values[key as keyof typeof values];
             if (key === "established_year") {
               if (value) {
-                formData.append(key, String(Number(value))); // Append as string number
+                formData.append(key, String(Number(value)));
               }
             } else if (value !== null && value !== undefined) {
               formData.append(key, value);
@@ -99,42 +101,22 @@ export default function CreateAgencyPage() {
         // Append success story images
         successStoryImages.forEach((file, index) => {
           formData.append(`successStoryImages[${index}]`, file);
-          // Or if your backend expects a simple array of files without indices:
-          // formData.append('successStoryImages', file);
         });
 
         // Add static status fields
         formData.append("status", "PENDING");
-        formData.append("is_approved", "false"); // FormData appends booleans as strings
-        formData.append("is_deleted", "false"); // FormData appends booleans as strings
+        formData.append("is_approved", "false");
+        formData.append("is_deleted", "false");
 
         // Log FormData contents for debugging (optional)
-        // You cannot directly console.log a FormData object like a regular object.
-        // You need to iterate over it:
         console.log("FormData contents:");
         for (const pair of Array.from(formData.entries())) {
           console.log(pair[0] + ": " + pair[1]);
         }
 
-        // --- Replace the simulated API call with a real fetch or axios call ---
-        // Example with fetch:
-        // const response = await fetch('/api/agencies', { // Replace with your actual API endpoint
-        //   method: 'POST',
-        //   body: formData,
-        //   // Do NOT set Content-Type header; browser will set it correctly with boundary
-        // });
-
-        // if (!response.ok) {
-        //   throw new Error(`HTTP error! status: ${response.status}`);
-        // }
-
-        // const result = await response.json();
-        // console.log("Agency created successfully:", result);
-        // ---------------------------------------------------------------------
-
-        // Simulate API call for now
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        console.log("Creating agency with FormData (simulated)");
+        // Use RTK Query mutation instead of manual fetch
+        const result = await createAgency(formData).unwrap();
+        console.log("Agency created successfully:", result);
 
         formik.resetForm();
         if (logoPreview) URL.revokeObjectURL(logoPreview);
@@ -143,12 +125,8 @@ export default function CreateAgencyPage() {
         successStoryPreviews.forEach((url) => URL.revokeObjectURL(url));
         setSuccessStoryImages([]);
         setSuccessStoryPreviews([]);
-        alert("Agency created successfully! (Simulated)");
       } catch (error) {
         console.error("Error creating agency:", error);
-        alert("Failed to create agency. Please try again.");
-      } finally {
-        setIsSubmitting(false);
       }
     },
   });
@@ -268,9 +246,11 @@ export default function CreateAgencyPage() {
                     />
                     {logoPreview ? (
                       <div className="relative w-40 h-40">
-                        <img
+                        <Image
                           src={logoPreview}
                           alt="Logo preview"
+                          width={160}
+                          height={160}
                           className="w-full h-full object-cover rounded-lg"
                         />
                         <Button
@@ -480,9 +460,10 @@ export default function CreateAgencyPage() {
                             key={file.name + index}
                             className="relative w-full aspect-square"
                           >
-                            <img
+                            <Image
                               src={successStoryPreviews[index]}
                               alt={`Success story ${index + 1}`}
+                              fill
                               className="w-full h-full object-cover rounded-lg"
                             />
                             <Button
@@ -510,10 +491,10 @@ export default function CreateAgencyPage() {
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isSubmitting}
+                  disabled={isLoading}
                   className="bg-primary hover:bg-primary/90"
                 >
-                  {isSubmitting ? "Creating..." : "Create Agency"}
+                  {isLoading ? "Creating..." : "Create Agency"}
                 </Button>
               </div>
             </form>
