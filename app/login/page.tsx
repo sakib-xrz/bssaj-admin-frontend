@@ -20,6 +20,7 @@ import { setToken } from "@/redux/features/auth/authSlice";
 import { useDispatch } from "react-redux";
 import { toast } from "sonner";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
 
 const loginSchema = Yup.object().shape({
   email: Yup.string()
@@ -31,6 +32,7 @@ const loginSchema = Yup.object().shape({
 });
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
   const dispatch = useDispatch();
   const [error, setError] = useState("");
 
@@ -44,8 +46,16 @@ export default function LoginPage() {
       try {
         const response = await userLogin(values);
         const access_token = response?.data?.access_token;
+
         dispatch(setToken({ token: access_token }));
+
         toast.success("Logged in successfully");
+
+        const redirectUrl = searchParams.get("next") || "/dashboard";
+
+        setTimeout(() => {
+          window.location.href = redirectUrl;
+        }, 100);
       } catch (error) {
         formik.resetForm();
         // @ts-expect-error Error message is a string

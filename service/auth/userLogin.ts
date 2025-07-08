@@ -7,9 +7,6 @@ type UserLoginPayload = {
 };
 
 const userLogin = async (payload: UserLoginPayload) => {
-  const urlParams = new URLSearchParams(window?.location?.search);
-  const existingRedirectURL = urlParams.get("next");
-
   try {
     const response = await fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
@@ -29,11 +26,7 @@ const userLogin = async (payload: UserLoginPayload) => {
     const { access_token } = data?.data;
 
     if (access_token) {
-      await setTokenAndRedirect(access_token, {
-        redirect: existingRedirectURL || "/dashboard",
-      });
-
-      window.location.reload();
+      await setTokenAndRedirect(access_token);
     }
 
     return data;
