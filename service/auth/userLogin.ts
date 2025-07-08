@@ -32,6 +32,8 @@ const userLogin = async (payload: UserLoginPayload) => {
       await setTokenAndRedirect(access_token, {
         redirect: existingRedirectURL || "/dashboard",
       });
+
+      window.location.reload();
     }
 
     return data;
