@@ -10,7 +10,7 @@ const nextConfig = {
       },
       {
         protocol: "https",
-        hostname: "syd1.digitaloceanspaces.com",
+        hostname: "sgp1.digitaloceanspaces.com",
         port: "",
         pathname: "/**",
       },
