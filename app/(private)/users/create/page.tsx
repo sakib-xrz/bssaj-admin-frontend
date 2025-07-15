@@ -226,7 +226,7 @@ export default function CreateUserPage() {
                 </Link>
                 <Button
                   type="submit"
-                  disabled={isLoading || !formik.isValid}
+                  disabled={isLoading}
                   className="bg-primary hover:bg-primary/90"
                 >
                   {isLoading ? "Creating..." : "Create User"}

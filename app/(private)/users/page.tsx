@@ -61,10 +61,6 @@ interface User {
   name: string;
   email: string;
   role: string;
-  agency: null | {
-    id: string;
-    name: string;
-  };
   created_at: string;
 }
 
@@ -201,7 +197,6 @@ export default function UsersPage() {
                       <TableHead>Name</TableHead>
                       <TableHead>Email</TableHead>
                       <TableHead>Role</TableHead>
-                      <TableHead>Agency</TableHead>
                       <TableHead>Created</TableHead>
                       <TableHead className="text-right">Actions</TableHead>
                     </TableRow>
@@ -221,17 +216,6 @@ export default function UsersPage() {
                           >
                             {user.role.split("_").join(" ")}
                           </Badge>
-                        </TableCell>
-                        <TableCell>
-                          {user.agency ? (
-                            <span className="text-sm text-gray-600">
-                              {user.agency.name}
-                            </span>
-                          ) : (
-                            <span className="text-sm text-gray-400">
-                              No Agency
-                            </span>
-                          )}
                         </TableCell>
                         <TableCell>
                           {format(new Date(user.created_at), "dd MMM yyyy")}
