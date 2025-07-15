@@ -37,6 +37,8 @@ export const useAuthToken = (): string | null => {
 
 interface DecodedUser {
   id: string;
+  name: string;
+  profile_picture: string | null;
   email: string;
   role: string;
   exp: number;
