@@ -761,6 +761,10 @@ export default function CreateAgencyPage() {
                       </div>
                     )}
                   </div>
+                  <p className="text-xs text-gray-500">
+                    Upload success story images to showcase your agency (max 5
+                    images)
+                  </p>
                 </div>
               </div>
 
