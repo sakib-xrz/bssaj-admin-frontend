@@ -270,8 +270,6 @@ export default function CreateAgencyPage() {
     setSuccessStoryImages((prev) => prev.filter((item) => item.id !== id));
   };
 
-  console.log(formik.values);
-
   return (
     <Container>
       <div className="space-y-6">
