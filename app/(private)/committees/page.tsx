@@ -52,24 +52,28 @@ import { toast } from "sonner";
 
 const designationColors = {
   PRESIDENT: "bg-purple-100 text-purple-800",
-  VICE_PRESIDENT: "bg-blue-100 text-blue-800",
-  GENERAL_SECRETARY: "bg-green-100 text-green-800",
-  ASSISTANT_SECRETARY: "bg-cyan-100 text-cyan-800",
-  TREASURER: "bg-orange-100 text-orange-800",
-  JOINT_TREASURER: "bg-yellow-100 text-yellow-800",
-  EXECUTIVE_MEMBER: "bg-gray-100 text-gray-800",
-  ADVISOR: "bg-indigo-100 text-indigo-800",
+  SR_VICE_PRESIDENT: "bg-blue-100 text-blue-800",
+  VICE_PRESIDENT: "bg-green-100 text-green-800",
+  GENERAL_SECRETARY: "bg-orange-100 text-orange-800",
+  JOINT_GENERAL_SECRETARY: "bg-yellow-100 text-yellow-800",
+  TREASURER: "bg-gray-100 text-gray-800",
+  JOINT_TREASURER: "bg-indigo-100 text-indigo-800",
+  EXECUTIVE_MEMBER: "bg-red-100 text-red-800",
+  ADVISOR: "bg-pink-100 text-pink-800",
+  OTHER: "bg-gray-100 text-gray-800",
 };
 
 const designationLabels = {
   PRESIDENT: "President",
+  SR_VICE_PRESIDENT: "Sr. Vice President",
   VICE_PRESIDENT: "Vice President",
   GENERAL_SECRETARY: "General Secretary",
-  ASSISTANT_SECRETARY: "Assistant Secretary",
+  JOINT_GENERAL_SECRETARY: "Joint General Secretary",
   TREASURER: "Treasurer",
   JOINT_TREASURER: "Joint Treasurer",
   EXECUTIVE_MEMBER: "Executive Member",
   ADVISOR: "Advisor",
+  OTHER: "Other",
 };
 
 interface Committee {
