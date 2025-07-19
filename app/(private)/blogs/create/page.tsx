@@ -1,16 +1,23 @@
+"use client";
+
+import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { BlogForm } from "@/app/(private)/_components/blog-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import React from "react";
 
 export default function CreateBlogPage() {
+  const router = useRouter();
+
+  const handleSuccess = () => {
+    router.push("/blogs");
+  };
+
+  const handleCancel = () => {
+    router.push("/blogs");
+  };
+
   return (
     <Container>
       <div className="space-y-6">
@@ -22,21 +29,16 @@ export default function CreateBlogPage() {
             </Button>
           </Link>
           <div className="sm:text-center">
-            <h1 className="text-3xl font-bold text-gray-900">Create Blog</h1>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create Blog Post
+            </h1>
             <p className="text-gray-600">
-              Create a new blog post in the system
+              Create a new blog post for the organization
             </p>
           </div>
         </div>
 
-        <Card className="max-w-4xl mx-auto">
-          <CardHeader>
-            <CardTitle>Blog Information</CardTitle>
-            <CardDescription>
-              Fill in the details to create a new blog post
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <BlogForm onSuccess={handleSuccess} onCancel={handleCancel} />
       </div>
     </Container>
   );

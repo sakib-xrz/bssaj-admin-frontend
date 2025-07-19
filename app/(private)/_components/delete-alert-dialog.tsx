@@ -1,4 +1,4 @@
-"use client"
+"use client";
 
 import {
   AlertDialog,
@@ -9,17 +9,17 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-} from "@/components/ui/alert-dialog"
-import { AlertTriangle } from "lucide-react"
+} from "@/components/ui/alert-dialog";
+import { Loader2 } from "lucide-react";
 
 interface DeleteAlertDialogProps {
-  isOpen: boolean
-  onClose: () => void
-  onConfirm: () => void
-  title: string
-  description: string
-  itemName: string
-  isLoading?: boolean
+  isOpen: boolean;
+  onClose: () => void;
+  onConfirm: () => void;
+  title: string;
+  description: string;
+  itemName: string;
+  isLoading?: boolean;
 }
 
 export function DeleteAlertDialog({
@@ -35,16 +35,15 @@ export function DeleteAlertDialog({
     <AlertDialog open={isOpen} onOpenChange={onClose}>
       <AlertDialogContent>
         <AlertDialogHeader>
-          <AlertDialogTitle className="flex items-center space-x-2">
-            <AlertTriangle className="w-5 h-5 text-red-500" />
-            <span>{title}</span>
-          </AlertDialogTitle>
-          <AlertDialogDescription className="space-y-2">
-            <p>{description}</p>
-            <p className="font-medium text-gray-900">
-              Item to delete: <span className="text-red-600">{itemName}</span>
-            </p>
-            <p className="text-sm text-red-600">This action cannot be undone.</p>
+          <AlertDialogTitle>{title}</AlertDialogTitle>
+          <AlertDialogDescription>
+            {description}
+            {itemName && (
+              <span className="font-medium text-gray-900">
+                <br />
+                Item: &ldquo;{itemName}&rdquo;
+              </span>
+            )}
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
@@ -52,12 +51,13 @@ export function DeleteAlertDialog({
           <AlertDialogAction
             onClick={onConfirm}
             disabled={isLoading}
-            className="bg-red-600 hover:bg-red-700 focus:ring-red-600"
+            className="bg-red-600 hover:bg-red-700"
           >
-            {isLoading ? "Deleting..." : "Delete"}
+            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            Delete
           </AlertDialogAction>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
-  )
+  );
 }

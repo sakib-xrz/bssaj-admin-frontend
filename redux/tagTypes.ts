@@ -3,6 +3,7 @@ export const tagTypes = {
   member: "member",
   agency: "agency",
   committee: "committee",
+  blog: "blog",
 };
 
 export const tagTypesList = [
@@ -10,4 +11,5 @@ export const tagTypesList = [
   tagTypes.user,
   tagTypes.agency,
   tagTypes.committee,
+  tagTypes.blog,
 ];
