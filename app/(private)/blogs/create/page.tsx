@@ -3,7 +3,7 @@
 import { useRouter } from "next/navigation";
 import Container from "@/components/shared/container";
 import { Button } from "@/components/ui/button";
-import { BlogForm } from "@/app/(private)/_components/blog-form";
+import { BlogForm } from "@/app/(private)/blogs/_components/blog-form";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 

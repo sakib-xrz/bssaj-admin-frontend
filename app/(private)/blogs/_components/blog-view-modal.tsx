@@ -22,7 +22,6 @@ import {
 import {
   CheckCircle,
   XCircle,
-  Edit,
   Calendar,
   User,
   FileText,
@@ -119,18 +118,6 @@ export function BlogViewModal({ blogId, isOpen, onClose }: BlogViewModalProps) {
     }
   };
 
-  const getStatusBadge = () => {
-    if (!blog) return null;
-
-    if (blog.is_approved === true) {
-      return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
-    } else if (blog.is_approved === false) {
-      return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
-    } else {
-      return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-    }
-  };
-
   const getPublishStatusBadge = () => {
     if (!blog) return null;
 
@@ -194,7 +181,6 @@ export function BlogViewModal({ blogId, isOpen, onClose }: BlogViewModalProps) {
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold">{blog.title}</h3>
                   <div className="flex items-center space-x-2 mt-1 flex-wrap gap-1">
-                    {getStatusBadge()}
                     {getPublishStatusBadge()}
                   </div>
                 </div>
@@ -215,7 +201,7 @@ export function BlogViewModal({ blogId, isOpen, onClose }: BlogViewModalProps) {
                     <div className="w-10 h-10 bg-primary rounded-full flex items-center justify-center text-white font-semibold">
                       {blog.author?.name
                         ?.split(" ")
-                        .map((n) => n[0])
+                        .map((n: string) => n[0])
                         .join("")
                         .toUpperCase()}
                     </div>
@@ -302,19 +288,6 @@ export function BlogViewModal({ blogId, isOpen, onClose }: BlogViewModalProps) {
                         </p>
                       </div>
                     )}
-                  </div>
-                ) : blog.is_approved === false ? (
-                  <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-                    <div className="flex items-center space-x-2">
-                      <XCircle className="w-5 h-5 text-red-600" />
-                      <span className="font-medium text-red-800">
-                        Blog Rejected
-                      </span>
-                    </div>
-                    <p className="text-sm text-red-700 mt-2">
-                      This blog post has been rejected and will not be
-                      published.
-                    </p>
                   </div>
                 ) : (
                   <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">

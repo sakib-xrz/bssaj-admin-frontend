@@ -45,7 +45,7 @@ export const blogApi = baseApi.injectEndpoints({
     approveOrRejectBlog: builder.mutation({
       query: ({ id, data }) => ({
         url: `/admin/approve-reject-blog/${id}`,
-        method: "PATCH",
+        method: "PUT",
         body: data,
       }),
       invalidatesTags: [tagTypes.blog],

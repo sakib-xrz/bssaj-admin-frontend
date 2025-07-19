@@ -34,13 +34,12 @@ import {
   Edit,
   Trash2,
   Eye,
-  CheckCircle,
-  XCircle,
-  Clock,
   FileText,
   Loader2,
+  Check,
+  X,
 } from "lucide-react";
-import { BlogViewModal } from "@/app/(private)/_components/blog-view-modal";
+import { BlogViewModal } from "@/app/(private)/blogs/_components/blog-view-modal";
 import { DeleteAlertDialog } from "@/app/(private)/_components/delete-alert-dialog";
 import Container from "@/components/shared/container";
 import { format } from "date-fns";
@@ -57,23 +56,20 @@ import { toast } from "sonner";
 
 interface Blog {
   id: string;
+  approved_by_id: string | null;
+  approved_by: {
+    name: string;
+  } | null;
+  author: {
+    name: string;
+  };
+  cover_image: string | null;
+  is_approved: boolean;
+  is_published: boolean;
   title: string;
   content: string;
-  cover_image?: string;
-  is_approved?: boolean | null;
-  is_published: boolean;
   created_at: string;
   updated_at: string;
-  author: {
-    id: string;
-    name: string;
-    email: string;
-  };
-  approved_by?: {
-    id: string;
-    name: string;
-    email: string;
-  } | null;
 }
 
 export default function BlogsPage() {
@@ -176,35 +172,13 @@ export default function BlogsPage() {
     }
   };
 
-  const getStatusBadge = (blog: Blog) => {
-    if (blog.is_approved === true) {
-      return <Badge className="bg-green-100 text-green-800">Approved</Badge>;
-    } else if (blog.is_approved === false) {
-      return <Badge className="bg-red-100 text-red-800">Rejected</Badge>;
-    } else {
-      return <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>;
-    }
-  };
-
   const getPublishStatusBadge = (blog: Blog) => {
     return blog.is_published ? (
       <Badge className="bg-blue-100 text-blue-800">Published</Badge>
     ) : (
-      <Badge className="bg-gray-100 text-gray-800">Draft</Badge>
+      <Badge className="bg-orange-100 text-orange-800">Pending</Badge>
     );
   };
-
-  // Calculate stats from data
-  const stats = blogs
-    ? {
-        total_blogs: blogs.length,
-        approved_blogs: blogs.filter((blog: Blog) => blog.is_approved === true)
-          .length,
-        pending_blogs: blogs.filter((blog: Blog) => blog.is_approved === null)
-          .length,
-        published_blogs: blogs.filter((blog: Blog) => blog.is_published).length,
-      }
-    : null;
 
   if (isLoading) {
     return (
@@ -215,24 +189,6 @@ export default function BlogsPage() {
               <h1 className="text-3xl font-bold text-gray-900">Blog Posts</h1>
               <p className="text-gray-600">Manage blog posts and articles</p>
             </div>
-            <div className="w-[120px] h-10 bg-gray-200 animate-pulse rounded-md" />
-          </div>
-
-          {/* Stats Cards Loading */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-            {[1, 2, 3, 4].map((i) => (
-              <Card key={i}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="space-y-2">
-                      <div className="w-20 h-4 bg-gray-200 animate-pulse rounded" />
-                      <div className="w-8 h-8 bg-gray-200 animate-pulse rounded" />
-                    </div>
-                    <div className="w-8 h-8 bg-gray-200 animate-pulse rounded" />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
           </div>
 
           <Card>
@@ -270,55 +226,6 @@ export default function BlogsPage() {
               Create Blog
             </Button>
           </Link>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
-          {[
-            {
-              label: "Total Blogs",
-              count: stats?.total_blogs || 0,
-              color: "text-blue-600",
-              icon: FileText,
-            },
-            {
-              label: "Approved Blogs",
-              count: stats?.approved_blogs || 0,
-              color: "text-green-600",
-              icon: CheckCircle,
-            },
-            {
-              label: "Pending Approval",
-              count: stats?.pending_blogs || 0,
-              color: "text-orange-600",
-              icon: Clock,
-            },
-            {
-              label: "Published Blogs",
-              count: stats?.published_blogs || 0,
-              color: "text-purple-600",
-              icon: Eye,
-            },
-          ].map((stat) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={stat.label}>
-                <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-gray-600">
-                        {stat.label}
-                      </p>
-                      <p className={`text-2xl font-bold ${stat.color}`}>
-                        {stat.count}
-                      </p>
-                    </div>
-                    <Icon className={`w-8 h-8 ${stat.color}`} />
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
         </div>
 
         <Card>
@@ -388,22 +295,10 @@ export default function BlogsPage() {
                           </div>
                         </TableCell>
                         <TableCell>
-                          <div className="flex items-center space-x-2">
-                            <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                              {blog.author?.name
-                                ?.split(" ")
-                                .map((n) => n[0])
-                                .join("")
-                                .toUpperCase()}
-                            </div>
-                            <span className="text-sm">
-                              {blog.author?.name || "Unknown"}
-                            </span>
-                          </div>
+                          <span className="text-sm">{blog.author?.name}</span>
                         </TableCell>
                         <TableCell>
                           <div className="flex gap-1 flex-wrap">
-                            {getStatusBadge(blog)}
                             {getPublishStatusBadge(blog)}
                           </div>
                         </TableCell>
@@ -421,44 +316,52 @@ export default function BlogsPage() {
                               </Button>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent align="end">
-                              <DropdownMenuItem
-                                onClick={() => handleViewBlog(blog)}
-                              >
-                                <Eye className="mr-2 h-4 w-4" />
-                                View Details
-                              </DropdownMenuItem>
-                              <DropdownMenuItem asChild>
-                                <Link href={`/blogs/edit/${blog.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit Blog
-                                </Link>
-                              </DropdownMenuItem>
-                              {blog.is_approved !== true &&
-                                blog.is_approved !== false && (
-                                  <>
-                                    <DropdownMenuItem
-                                      onClick={() => handleApproveBlog(blog)}
-                                      className="text-green-600"
-                                    >
-                                      <CheckCircle className="mr-2 h-4 w-4" />
-                                      Approve Blog
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem
-                                      onClick={() => handleRejectBlog(blog)}
-                                      className="text-red-600"
-                                    >
-                                      <XCircle className="mr-2 h-4 w-4" />
-                                      Reject Blog
-                                    </DropdownMenuItem>
-                                  </>
-                                )}
-                              <DropdownMenuItem
-                                className="text-red-600"
-                                onClick={() => handleDeleteBlog(blog)}
-                              >
-                                <Trash2 className="mr-2 h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
+                              {blog.approved_by_id === null ? (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleViewBlog(blog)}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleApproveBlog(blog)}
+                                    className="text-green-600"
+                                  >
+                                    <Check className="mr-2 h-4 w-4" />
+                                    Approve Blog
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    onClick={() => handleRejectBlog(blog)}
+                                    className="text-red-600"
+                                  >
+                                    <X className="mr-2 h-4 w-4" />
+                                    Reject Blog
+                                  </DropdownMenuItem>
+                                </>
+                              ) : (
+                                <>
+                                  <DropdownMenuItem
+                                    onClick={() => handleViewBlog(blog)}
+                                  >
+                                    <Eye className="mr-2 h-4 w-4" />
+                                    View Details
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem asChild>
+                                    <Link href={`/blogs/edit/${blog.id}`}>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      Edit Blog
+                                    </Link>
+                                  </DropdownMenuItem>
+                                  <DropdownMenuItem
+                                    className="text-red-600"
+                                    onClick={() => handleDeleteBlog(blog)}
+                                  >
+                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    Delete
+                                  </DropdownMenuItem>
+                                </>
+                              )}
                             </DropdownMenuContent>
                           </DropdownMenu>
                         </TableCell>
