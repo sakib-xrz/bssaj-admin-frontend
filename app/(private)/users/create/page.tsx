@@ -39,7 +39,7 @@ const userSchema = Yup.object({
     .min(6, "Password must be at least 6 characters")
     .required("Password is required"),
   role: Yup.string()
-    .oneOf(["STUDENT", "AGENCY", "ADMIN"], "Invalid role")
+    .oneOf(["STUDENT", "AGENCY", "ADMIN", "USER"], "Invalid role")
     .required("Role is required"),
   address: Yup.string(),
 });
