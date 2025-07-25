@@ -23,6 +23,7 @@ const navigation = [
   { name: "Agencies", href: "/agencies", icon: Building2 },
   { name: "Committees", href: "/committees", icon: Crown },
   { name: "Blogs", href: "/blogs", icon: FileText },
+  { name: "News", href: "/news", icon: FileText },
   // { name: "Events", href: "/events", icon: Calendar },
   // { name: "News", href: "/news", icon: MessageSquare },
   // { name: "Certifications", href: "/certifications", icon: Award },
