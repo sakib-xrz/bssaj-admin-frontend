@@ -71,13 +71,6 @@ export function DateTimePicker({
     handleDateTimeChange(date, newTime);
   };
 
-  const formatDisplayValue = () => {
-    if (!date) return placeholder;
-
-    const dateStr = format(date, "PPP"); // e.g., "Jan 1, 2024"
-    return `${dateStr} at ${time}`;
-  };
-
   return (
     <div className={cn("flex gap-2", className)}>
       {/* Date Picker with Popover */}
@@ -117,6 +110,7 @@ export function DateTimePicker({
           onChange={handleTimeChange}
           disabled={disabled}
           className="w-32 pl-9 [&::-webkit-calendar-picker-indicator]:hidden"
+          placeholder={placeholder}
         />
         <ClockIcon className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
       </div>
