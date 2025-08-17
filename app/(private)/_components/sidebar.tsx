@@ -12,9 +12,7 @@ import {
   FileText,
   Calendar,
   Newspaper,
-  // MessageSquare,
-  // Settings,
-  // Award,
+  Award,
 } from "lucide-react";
 
 const navigation = [
@@ -26,9 +24,7 @@ const navigation = [
   { name: "Blogs", href: "/blogs", icon: FileText },
   { name: "News", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
-  // { name: "News", href: "/news", icon: MessageSquare },
-  // { name: "Certifications", href: "/certifications", icon: Award },
-  // { name: "Settings", href: "/settings", icon: Settings },
+  { name: "Certifications", href: "/certifications", icon: Award },
 ];
 
 export function SidebarContent() {
