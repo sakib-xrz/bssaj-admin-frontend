@@ -216,7 +216,9 @@ export function AgencyViewModal({
                     <Mail className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <p className="text-sm font-medium text-gray-500">Email</p>
+                    <p className="text-sm font-medium text-gray-500">
+                      Contact Email
+                    </p>
                     <a
                       href={`mailto:${agency.contact_email}`}
                       className="text-sm text-secondary hover:underline"
@@ -225,6 +227,24 @@ export function AgencyViewModal({
                     </a>
                   </div>
                 </div>
+                {agency.agency_email && (
+                  <div className="flex items-center space-x-3">
+                    <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-blue-500">
+                      <Mail className="w-4 h-4 text-blue-500" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-500">
+                        Agency Email
+                      </p>
+                      <a
+                        href={`mailto:${agency.agency_email}`}
+                        className="text-sm text-blue-600 hover:underline"
+                      >
+                        {agency.agency_email}
+                      </a>
+                    </div>
+                  </div>
+                )}
                 {agency.contact_phone && (
                   <div className="flex items-center space-x-3">
                     <div className="w-10 h-10 bg-transparent rounded-full flex items-center justify-center border border-primary">

@@ -41,6 +41,7 @@ import {
   Loader2,
   Mail,
   Phone,
+  Edit,
 } from "lucide-react";
 import { AgencyViewModal } from "./_components/agency-view-modal";
 import { DeleteAlertDialog } from "../_components/delete-alert-dialog";
@@ -65,6 +66,7 @@ interface Agency {
   description: string | null;
   website: string | null;
   contact_email: string;
+  agency_email: string | null;
   contact_phone: string | null;
   address: string | null;
   facebook_url: string | null;
@@ -362,7 +364,12 @@ export default function AgenciesPage() {
                               </div>
                             )}
                             <div>
-                              <div className="font-medium">{agency.name}</div>
+                              <div
+                                className="font-medium max-w-[150px] truncate"
+                                title={agency.name}
+                              >
+                                {agency.name}
+                              </div>
                               <div className="text-sm text-gray-500">
                                 {agency.user?.email || agency.contact_email}
                               </div>
@@ -457,6 +464,12 @@ export default function AgenciesPage() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
+                                  <Link href={`/agencies/edit/${agency.id}`}>
+                                    <DropdownMenuItem>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      Edit Agency
+                                    </DropdownMenuItem>
+                                  </Link>
                                   <DropdownMenuItem
                                     onClick={() => handleApprove(agency)}
                                     className="text-green-600"
@@ -480,6 +493,12 @@ export default function AgenciesPage() {
                                     <Eye className="mr-2 h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
+                                  <Link href={`/agencies/edit/${agency.id}`}>
+                                    <DropdownMenuItem>
+                                      <Edit className="mr-2 h-4 w-4" />
+                                      Edit Agency
+                                    </DropdownMenuItem>
+                                  </Link>
                                   <DropdownMenuItem
                                     className="text-red-600"
                                     onClick={() => handleDeleteAgency(agency)}
