@@ -13,6 +13,7 @@ import {
   Calendar,
   Newspaper,
   Award,
+  Image,
 } from "lucide-react";
 
 const navigation = [
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Blogs", href: "/blogs", icon: FileText },
   { name: "News", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
+  { name: "Banners", href: "/banners", icon: Image },
   { name: "Certifications", href: "/certifications", icon: Award },
 ];
 
