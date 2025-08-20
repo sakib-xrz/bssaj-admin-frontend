@@ -11,6 +11,14 @@ export const agencyApi = baseApi.injectEndpoints({
       }),
       providesTags: [tagTypes.agency],
     }),
+    searchAgencies: builder.query({
+      query: (query) => ({
+        url: `/agencies`,
+        method: "GET",
+        params: { ...query, status: "APPROVED" }, // Only search approved agencies
+      }),
+      providesTags: [tagTypes.agency],
+    }),
     getAgencyById: builder.query({
       query: (id) => ({
         url: `/agencies/${id}`,
@@ -63,6 +71,7 @@ export const agencyApi = baseApi.injectEndpoints({
 
 export const {
   useGetAgenciesQuery,
+  useSearchAgenciesQuery,
   useGetAgencyByIdQuery,
   useGetAgencyStatsQuery,
   useCreateAgencyMutation,

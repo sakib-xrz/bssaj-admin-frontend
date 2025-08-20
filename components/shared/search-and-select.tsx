@@ -66,7 +66,7 @@ function StaticSearchSelect({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className={cn("*:not-first:mt-2", className)}>
+    <div className={cn("*:not-first:mt-2 space-y-2", className)}>
       {label && <Label htmlFor={id}>{label}</Label>}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
@@ -187,8 +187,12 @@ function DynamicSearchSelect({
   }, [open]);
 
   return (
-    <div className={cn("*:not-first:mt-2", className)}>
-      {label && <Label htmlFor={id}>{label}</Label>}
+    <div className={cn("*:not-first:mt-2 space-y-2", className)}>
+      {label && (
+        <Label htmlFor={id} className="mb-2">
+          {label}
+        </Label>
+      )}
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
