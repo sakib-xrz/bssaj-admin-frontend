@@ -38,7 +38,6 @@ import {
   MoreHorizontal,
   Trash2,
   Eye,
-  Edit,
   DollarSign,
   CreditCard,
   Clock,
@@ -536,12 +535,6 @@ export default function PaymentsPage() {
                                   </DropdownMenuItem>
                                 </>
                               )}
-                              <Link href={`/payments/edit/${payment.id}`}>
-                                <DropdownMenuItem>
-                                  <Edit className="mr-2 h-4 w-4" />
-                                  Edit Payment
-                                </DropdownMenuItem>
-                              </Link>
                               <DropdownMenuItem
                                 className="text-red-600"
                                 onClick={() => handleDeletePayment(payment)}
