@@ -31,15 +31,21 @@ interface Agency {
   contact_email: string;
 }
 
+// Helper functions
+const getCurrentMonth = () => {
+  const now = new Date();
+  return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
+};
+
 export default function CreatePaymentPage() {
   const router = useRouter();
+
   const [formData, setFormData] = useState<CreatePaymentData>({
     agency_id: "",
     payment_month: "",
     amount: 0,
     payment_method: "",
     notes: "",
-    due_date: "",
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -94,10 +100,6 @@ export default function CreatePaymentPage() {
       newErrors.amount = "Amount must be greater than 0";
     }
 
-    if (!formData.due_date) {
-      newErrors.due_date = "Due date is required";
-    }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -120,31 +122,17 @@ export default function CreatePaymentPage() {
     }
   };
 
-  const generateCurrentMonth = () => {
-    const now = new Date();
-    return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(
-      2,
-      "0"
-    )}`;
-  };
-
-  const generateDueDate = () => {
-    const now = new Date();
-    const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-    return lastDay.toISOString().split("T")[0];
-  };
-
   return (
     <Container>
       <div className="space-y-6">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/payments">
-            <Button variant="outline" size="sm">
+            <Button variant="ghost" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
               Back to Payments
             </Button>
           </Link>
-          <div>
+          <div className="sm:text-center">
             <h1 className="text-3xl font-bold text-gray-900">Create Payment</h1>
             <p className="text-gray-600">
               Add a new agency subscription payment
@@ -152,7 +140,7 @@ export default function CreatePaymentPage() {
           </div>
         </div>
 
-        <Card>
+        <Card className="max-w-2xl mx-auto">
           <CardHeader>
             <CardTitle>Payment Information</CardTitle>
             <CardDescription>
@@ -163,7 +151,7 @@ export default function CreatePaymentPage() {
             <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Agency Selection */}
-                <div className="space-y-2 col-span-2">
+                <div className="space-y-2">
                   <SearchSelect
                     label="Select Agency *"
                     placeholder="Type to search for agencies..."
@@ -195,40 +183,19 @@ export default function CreatePaymentPage() {
                     id="payment_month"
                     type="month"
                     value={formData.payment_month}
-                    onChange={(e) =>
+                    onChange={(e) => {
                       setFormData((prev) => ({
                         ...prev,
                         payment_month: e.target.value,
-                      }))
-                    }
+                      }));
+                    }}
                     className={errors.payment_month ? "border-red-500" : ""}
-                    placeholder={generateCurrentMonth()}
+                    placeholder={getCurrentMonth()}
                   />
                   {errors.payment_month && (
                     <p className="text-sm text-red-600">
                       {errors.payment_month}
                     </p>
-                  )}
-                </div>
-
-                {/* Due Date */}
-                <div className="space-y-2">
-                  <Label htmlFor="due_date">Due Date *</Label>
-                  <Input
-                    id="due_date"
-                    type="date"
-                    value={formData.due_date}
-                    onChange={(e) =>
-                      setFormData((prev) => ({
-                        ...prev,
-                        due_date: e.target.value,
-                      }))
-                    }
-                    className={errors.due_date ? "border-red-500" : ""}
-                    placeholder={generateDueDate()}
-                  />
-                  {errors.due_date && (
-                    <p className="text-sm text-red-600">{errors.due_date}</p>
                   )}
                 </div>
 

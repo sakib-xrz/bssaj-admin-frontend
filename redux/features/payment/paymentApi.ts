@@ -11,7 +11,6 @@ export interface Payment {
   payment_method?: string;
   transaction_id?: string;
   notes?: string;
-  due_date: string;
   late_fee?: number;
   approved_at?: string;
   approved_by_id?: string;
@@ -46,7 +45,6 @@ export interface CreatePaymentData {
   amount: number;
   payment_method?: string;
   notes?: string;
-  due_date: string;
 }
 
 export interface UpdatePaymentData {
@@ -57,19 +55,17 @@ export interface UpdatePaymentData {
   payment_method?: string;
   transaction_id?: string;
   notes?: string;
-  due_date?: string;
   late_fee?: number;
 }
 
 export interface ApprovePaymentData {
-  payment_status: "PAID" | "REJECTED";
+  payment_status: "PAID" | "FAILED";
   notes?: string;
 }
 
 export interface BulkCreatePaymentData {
   payment_month: string;
   amount: number;
-  due_date: string;
   agency_ids?: string[];
   include_all_active_agencies?: boolean;
 }
@@ -105,6 +101,13 @@ export const paymentApi = baseApi.injectEndpoints({
         params: query,
       }),
       providesTags: [tagTypes.payment],
+    }),
+    getAgencyPaymentSummary: builder.query({
+      query: (agencyId: string) => ({
+        url: `/payments/agency/${agencyId}/summary`,
+        method: "GET",
+      }),
+      providesTags: [tagTypes.payment, tagTypes.agency],
     }),
     createPayment: builder.mutation({
       query: (data: CreatePaymentData) => ({
@@ -145,13 +148,6 @@ export const paymentApi = baseApi.injectEndpoints({
       }),
       invalidatesTags: [tagTypes.payment, tagTypes.agency],
     }),
-    markOverduePayments: builder.mutation({
-      query: () => ({
-        url: `/payments/mark-overdue`,
-        method: "PATCH",
-      }),
-      invalidatesTags: [tagTypes.payment, tagTypes.agency],
-    }),
   }),
 });
 
@@ -160,10 +156,10 @@ export const {
   useGetPaymentByIdQuery,
   useGetPaymentStatsQuery,
   useGetAgencyPaymentsQuery,
+  useGetAgencyPaymentSummaryQuery,
   useCreatePaymentMutation,
   useUpdatePaymentMutation,
   useApprovePaymentMutation,
   useDeletePaymentMutation,
   useBulkCreatePaymentsMutation,
-  useMarkOverduePaymentsMutation,
 } = paymentApi;

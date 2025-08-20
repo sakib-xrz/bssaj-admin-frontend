@@ -27,19 +27,12 @@ const generateCurrentMonth = () => {
   return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
 };
 
-const generateDueDate = () => {
-  const now = new Date();
-  const lastDay = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-  return lastDay.toISOString().split("T")[0];
-};
-
 export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
   const [includeAllAgencies, setIncludeAllAgencies] = useState(true);
   const [selectedAgencies, setSelectedAgencies] = useState<string[]>([]);
   const [formData, setFormData] = useState({
     payment_month: generateCurrentMonth(),
     amount: "",
-    due_date: generateDueDate(),
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -62,10 +55,6 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
       newErrors.amount = "Amount must be greater than 0";
     }
 
-    if (!formData.due_date) {
-      newErrors.due_date = "Due date is required";
-    }
-
     if (!includeAllAgencies && selectedAgencies.length === 0) {
       newErrors.agencies = "Please select at least one agency";
     }
@@ -83,7 +72,6 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
       const payload = {
         payment_month: formData.payment_month,
         amount: Number(formData.amount),
-        due_date: formData.due_date,
         include_all_active_agencies: includeAllAgencies,
         ...(includeAllAgencies ? {} : { agency_ids: selectedAgencies }),
       };
@@ -99,6 +87,7 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
       );
 
       handleClose();
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       console.error("Error creating bulk payments:", error);
       toast.error(error?.data?.message || "Failed to create payments");
@@ -109,7 +98,6 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
     setFormData({
       payment_month: generateCurrentMonth(),
       amount: "",
-      due_date: generateDueDate(),
     });
     setErrors({});
     setIncludeAllAgencies(true);
@@ -127,7 +115,8 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
 
   const handleSelectAllAgencies = (checked: boolean) => {
     if (checked) {
-      setSelectedAgencies(agencies.map((agency) => agency.id));
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setSelectedAgencies(agencies.map((agency: any) => agency.id));
     } else {
       setSelectedAgencies([]);
     }
@@ -189,23 +178,6 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
             )}
           </div>
 
-          {/* Due Date */}
-          <div className="space-y-2">
-            <Label htmlFor="due_date">Due Date *</Label>
-            <Input
-              id="due_date"
-              type="date"
-              value={formData.due_date}
-              onChange={(e) =>
-                setFormData((prev) => ({ ...prev, due_date: e.target.value }))
-              }
-              className={errors.due_date ? "border-red-500" : ""}
-            />
-            {errors.due_date && (
-              <p className="text-sm text-red-600">{errors.due_date}</p>
-            )}
-          </div>
-
           {/* Agency Selection */}
           <div className="space-y-4">
             <Label className="flex items-center">
@@ -243,7 +215,8 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
                 </div>
 
                 {agencies.length > 0 ? (
-                  agencies.map((agency) => (
+                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                  agencies.map((agency: any) => (
                     <div
                       key={agency.id}
                       className="flex items-center space-x-2"

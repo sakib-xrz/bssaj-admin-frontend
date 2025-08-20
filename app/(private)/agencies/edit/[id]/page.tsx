@@ -164,6 +164,7 @@ export default function EditAgencyPage() {
         facebook_url: agency.facebook_url || "",
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [agency]);
 
   const handleLogoChange = (event: React.ChangeEvent<HTMLInputElement>) => {

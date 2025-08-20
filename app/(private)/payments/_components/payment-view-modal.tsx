@@ -178,10 +178,7 @@ export function PaymentViewModal({
                     {payment.payment_month}
                   </p>
                 </div>
-                <div>
-                  <p className="text-sm text-gray-600">Due Date</p>
-                  <p className="font-medium">{formatDate(payment.due_date)}</p>
-                </div>
+
                 <div>
                   <p className="text-sm text-gray-600">Payment Date</p>
                   <p className="font-medium">

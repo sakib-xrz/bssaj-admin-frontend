@@ -59,7 +59,6 @@ import {
   useDeletePaymentMutation,
   useApprovePaymentMutation,
   useGetPaymentStatsQuery,
-  useMarkOverduePaymentsMutation,
   Payment,
 } from "@/redux/features/payment/paymentApi";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -113,8 +112,6 @@ export default function PaymentsPage() {
 
   const [deletePayment, { isLoading: isDeleting }] = useDeletePaymentMutation();
   const [approvePayment] = useApprovePaymentMutation();
-  const [markOverduePayments, { isLoading: isMarkingOverdue }] =
-    useMarkOverduePaymentsMutation();
 
   // Handle pagination page change
   const handlePageChange = (page: number) => {
@@ -156,24 +153,12 @@ export default function PaymentsPage() {
     try {
       await approvePayment({
         id: payment.id,
-        data: { payment_status: "REJECTED" },
+        data: { payment_status: "FAILED" },
       }).unwrap();
       toast.success("Payment rejected successfully");
     } catch (error) {
       console.error("Error rejecting payment:", error);
       toast.error("Failed to reject payment");
-    }
-  };
-
-  const handleMarkOverdue = async () => {
-    try {
-      const result = await markOverduePayments({}).unwrap();
-      toast.success(
-        `Marked ${result.data.updated_payments} payments as overdue and paused ${result.data.paused_agencies} agencies`
-      );
-    } catch (error) {
-      console.error("Error marking overdue payments:", error);
-      toast.error("Failed to mark overdue payments");
     }
   };
 
@@ -299,18 +284,6 @@ export default function PaymentsPage() {
           <div className="flex gap-2">
             <Button
               variant="outline"
-              onClick={handleMarkOverdue}
-              disabled={isMarkingOverdue}
-            >
-              {isMarkingOverdue ? (
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-              ) : (
-                <AlertTriangle className="w-4 h-4 mr-2" />
-              )}
-              Mark Overdue
-            </Button>
-            <Button
-              variant="outline"
               onClick={() => setIsBulkCreateModalOpen(true)}
             >
               <Calendar className="w-4 h-4 mr-2" />
@@ -326,7 +299,7 @@ export default function PaymentsPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {[
             {
               label: "Total Payments",
@@ -345,12 +318,6 @@ export default function PaymentsPage() {
               count: stats?.total_pending_payments || 0,
               color: "text-yellow-600",
               icon: Clock,
-            },
-            {
-              label: "Overdue Payments",
-              count: stats?.total_overdue_payments || 0,
-              color: "text-red-600",
-              icon: AlertTriangle,
             },
           ].map((stat) => {
             const Icon = stat.icon;
@@ -485,7 +452,10 @@ export default function PaymentsPage() {
                           <div className="flex items-center space-x-2">
                             <Building2 className="w-4 h-4 text-gray-400" />
                             <div>
-                              <div className="font-medium">
+                              <div
+                                className="font-medium max-w-[200px] truncate"
+                                title={payment.agency.name}
+                              >
                                 {payment.agency.name}
                               </div>
                               <div className="text-sm text-gray-500">
@@ -503,18 +473,13 @@ export default function PaymentsPage() {
                           <div className="font-semibold">
                             {formatCurrency(payment.amount)}
                           </div>
-                          {payment.late_fee && payment.late_fee > 0 && (
-                            <div className="text-sm text-red-600">
-                              + {formatCurrency(payment.late_fee)} late fee
-                            </div>
-                          )}
                         </TableCell>
                         <TableCell>
                           {getPaymentStatusBadge(payment.payment_status)}
                         </TableCell>
                         <TableCell>
                           <div className="text-sm">
-                            {formatDate(payment.due_date)}
+                            {formatDate(payment.payment_month)}
                           </div>
                         </TableCell>
                         <TableCell>

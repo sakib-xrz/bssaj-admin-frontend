@@ -31,6 +31,7 @@ import { format } from "date-fns";
 import { useGetAgencyByIdQuery } from "@/redux/features/agency/agencyApi";
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { AgencyPaymentSummary } from "./agency-payment-summary";
 
 interface AgencyViewModalProps {
   agencyId: string | null;
@@ -517,6 +518,11 @@ export function AgencyViewModal({
                 </div>
               </div>
             </div>
+
+            <Separator />
+
+            {/* Payment Information */}
+            <AgencyPaymentSummary agencyId={agency.id} />
 
             <Separator />
 
