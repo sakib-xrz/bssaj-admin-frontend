@@ -249,7 +249,7 @@ export default function MembersPage() {
           </div>
           <Link href="/members/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Add Member
             </Button>
           </Link>
@@ -424,21 +424,21 @@ export default function MembersPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewMember(member)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleApprove(member)}
                                     className="text-green-600"
                                   >
-                                    <Check className="mr-2 h-4 w-4" />
+                                    <Check className="h-4 w-4" />
                                     Approve Member
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleReject(member)}
                                     className="text-red-600"
                                   >
-                                    <X className="mr-2 h-4 w-4" />
+                                    <X className="h-4 w-4" />
                                     Reject Member
                                   </DropdownMenuItem>
                                 </>
@@ -447,12 +447,12 @@ export default function MembersPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewMember(member)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem asChild>
                                     <Link href={`/members/edit/${member.id}`}>
-                                      <Edit className="mr-2 h-4 w-4" />
+                                      <Edit className="h-4 w-4" />
                                       Edit Member
                                     </Link>
                                   </DropdownMenuItem>
@@ -460,7 +460,7 @@ export default function MembersPage() {
                                     className="text-red-600"
                                     onClick={() => handleDeleteMember(member)}
                                   >
-                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                     Delete Permanently
                                   </DropdownMenuItem>
                                 </>
@@ -500,7 +500,7 @@ export default function MembersPage() {
                       </p>
                       <Link href="/members/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Add your first member
                         </Button>
                       </Link>

@@ -129,7 +129,7 @@ export default function EditMemberPage() {
         <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/members">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4" />
               Back to Members
             </Button>
           </Link>
@@ -170,7 +170,7 @@ export default function EditMemberPage() {
                     disabled={isApproving}
                     className="bg-green-600 hover:bg-green-700"
                   >
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-4 h-4" />
                     {isApproving ? "Approving..." : "Approve Member"}
                   </Button>
                 )}

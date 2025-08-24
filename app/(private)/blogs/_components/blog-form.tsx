@@ -208,7 +208,7 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
                     document.getElementById("cover_photo")?.click()
                   }
                 >
-                  <Upload className="w-4 h-4 mr-2" />
+                  <Upload className="w-4 h-4" />
                   Upload Cover Image
                 </Button>
               )}
@@ -282,7 +282,7 @@ export function BlogForm({ initialData, onSuccess, onCancel }: BlogFormProps) {
               disabled={isLoading}
               className="bg-primary hover:bg-primary/90"
             >
-              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing
                 ? isLoading
                   ? "Updating Blog..."

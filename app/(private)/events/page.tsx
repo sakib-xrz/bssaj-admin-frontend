@@ -199,7 +199,7 @@ export default function EventsPage() {
           </div>
           <Link href="/events/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Create Event
             </Button>
           </Link>
@@ -309,12 +309,12 @@ export default function EventsPage() {
                               <DropdownMenuItem
                                 onClick={() => handleViewEvent(event)}
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem asChild>
                                 <Link href={`/events/edit/${event.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                   Edit Event
                                 </Link>
                               </DropdownMenuItem>
@@ -322,7 +322,7 @@ export default function EventsPage() {
                                 className="text-red-600"
                                 onClick={() => handleDeleteEvent(event)}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -360,7 +360,7 @@ export default function EventsPage() {
                       </p>
                       <Link href="/events/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Create your first event
                         </Button>
                       </Link>

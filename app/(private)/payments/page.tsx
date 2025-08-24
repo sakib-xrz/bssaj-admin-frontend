@@ -285,12 +285,12 @@ export default function PaymentsPage() {
               variant="outline"
               onClick={() => setIsBulkCreateModalOpen(true)}
             >
-              <Calendar className="w-4 h-4 mr-2" />
+              <Calendar className="w-4 h-4" />
               Bulk Create
             </Button>
             <Link href="/payments/create">
               <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4" />
                 Add Payment
               </Button>
             </Link>
@@ -512,7 +512,7 @@ export default function PaymentsPage() {
                               <DropdownMenuItem
                                 onClick={() => handleViewPayment(payment)}
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
                               {payment.payment_status === "PENDING" && (
@@ -523,14 +523,14 @@ export default function PaymentsPage() {
                                     }
                                     className="text-green-600"
                                   >
-                                    <Check className="mr-2 h-4 w-4" />
+                                    <Check className="h-4 w-4" />
                                     Approve Payment
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleRejectPayment(payment)}
                                     className="text-red-600"
                                   >
-                                    <X className="mr-2 h-4 w-4" />
+                                    <X className="h-4 w-4" />
                                     Reject Payment
                                   </DropdownMenuItem>
                                 </>
@@ -539,7 +539,7 @@ export default function PaymentsPage() {
                                 className="text-red-600"
                                 onClick={() => handleDeletePayment(payment)}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete Payment
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -579,7 +579,7 @@ export default function PaymentsPage() {
                       </p>
                       <Link href="/payments/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Add your first payment
                         </Button>
                       </Link>

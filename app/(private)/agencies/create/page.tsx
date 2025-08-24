@@ -278,7 +278,7 @@ export default function CreateAgencyPage() {
         <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/agencies">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4" />
               Back to Agencies
             </Button>
           </Link>
@@ -493,7 +493,7 @@ export default function CreateAgencyPage() {
                         variant="outline"
                         onClick={() => document.getElementById("logo")?.click()}
                       >
-                        <Upload className="w-4 h-4 mr-2" />
+                        <Upload className="w-4 h-4" />
                         Upload Logo
                       </Button>
                     )}
@@ -542,7 +542,7 @@ export default function CreateAgencyPage() {
                           document.getElementById("cover_photo")?.click()
                         }
                       >
-                        <Upload className="w-4 h-4 mr-2" />
+                        <Upload className="w-4 h-4" />
                         Upload Cover Photo
                       </Button>
                     )}
@@ -758,7 +758,7 @@ export default function CreateAgencyPage() {
                         document.getElementById("success_stories")?.click()
                       }
                     >
-                      <Upload className="w-4 h-4 mr-2" />
+                      <Upload className="w-4 h-4" />
                       Upload Success Story Images
                     </Button>
                     {successStoryImages.length > 0 && (

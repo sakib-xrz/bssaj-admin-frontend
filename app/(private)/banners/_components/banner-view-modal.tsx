@@ -200,7 +200,7 @@ export function BannerViewModal({
                     className="mt-3"
                     onClick={() => window.open(banner.link, "_blank")}
                   >
-                    <ExternalLink className="w-4 h-4 mr-2" />
+                    <ExternalLink className="w-4 h-4" />
                     Visit Link
                   </Button>
                 </div>

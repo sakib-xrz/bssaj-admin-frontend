@@ -152,7 +152,7 @@ export default function CreateCommitteePage() {
         <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/committees">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4" />
               Back to Committee
             </Button>
           </Link>
@@ -343,7 +343,7 @@ export default function CreateCommitteePage() {
                         document.getElementById("profile_picture")?.click()
                       }
                     >
-                      <Upload className="w-4 h-4 mr-2" />
+                      <Upload className="w-4 h-4" />
                       Upload Profile Picture
                     </Button>
                   )}

@@ -111,7 +111,7 @@ export function EventViewModal({
               </div>
               <Link href={`/events/edit/${event.id}`}>
                 <Button size="sm" className="bg-primary hover:bg-primary/90">
-                  <Edit className="w-4 h-4 mr-2" />
+                  <Edit className="w-4 h-4" />
                   Edit Event
                 </Button>
               </Link>

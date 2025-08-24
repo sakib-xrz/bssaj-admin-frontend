@@ -253,7 +253,7 @@ export default function AgenciesPage() {
           </div>
           <Link href="/agencies/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Add Agency
             </Button>
           </Link>
@@ -461,12 +461,12 @@ export default function AgenciesPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewAgency(agency)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <Link href={`/agencies/edit/${agency.id}`}>
                                     <DropdownMenuItem>
-                                      <Edit className="mr-2 h-4 w-4" />
+                                      <Edit className="h-4 w-4" />
                                       Edit Agency
                                     </DropdownMenuItem>
                                   </Link>
@@ -474,14 +474,14 @@ export default function AgenciesPage() {
                                     onClick={() => handleApprove(agency)}
                                     className="text-green-600"
                                   >
-                                    <Check className="mr-2 h-4 w-4" />
+                                    <Check className="h-4 w-4" />
                                     Approve Agency
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleReject(agency)}
                                     className="text-red-600"
                                   >
-                                    <X className="mr-2 h-4 w-4" />
+                                    <X className="h-4 w-4" />
                                     Reject Agency
                                   </DropdownMenuItem>
                                 </>
@@ -490,12 +490,12 @@ export default function AgenciesPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewAgency(agency)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <Link href={`/agencies/edit/${agency.id}`}>
                                     <DropdownMenuItem>
-                                      <Edit className="mr-2 h-4 w-4" />
+                                      <Edit className="h-4 w-4" />
                                       Edit Agency
                                     </DropdownMenuItem>
                                   </Link>
@@ -503,7 +503,7 @@ export default function AgenciesPage() {
                                     className="text-red-600"
                                     onClick={() => handleDeleteAgency(agency)}
                                   >
-                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                     Delete Permanently
                                   </DropdownMenuItem>
                                 </>
@@ -543,7 +543,7 @@ export default function AgenciesPage() {
                       </p>
                       <Link href="/agencies/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Add your first agency
                         </Button>
                       </Link>

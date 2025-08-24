@@ -204,7 +204,7 @@ export function NewsForm({ initialData, onSuccess, onCancel }: NewsFormProps) {
               disabled={isLoading}
               className="bg-primary hover:bg-primary/90"
             >
-              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing
                 ? isLoading
                   ? "Updating News..."

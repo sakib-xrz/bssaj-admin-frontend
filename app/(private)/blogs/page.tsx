@@ -222,7 +222,7 @@ export default function BlogsPage() {
           </div>
           <Link href="/blogs/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Create Blog
             </Button>
           </Link>
@@ -321,21 +321,21 @@ export default function BlogsPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewBlog(blog)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleApproveBlog(blog)}
                                     className="text-green-600"
                                   >
-                                    <Check className="mr-2 h-4 w-4" />
+                                    <Check className="h-4 w-4" />
                                     Approve Blog
                                   </DropdownMenuItem>
                                   <DropdownMenuItem
                                     onClick={() => handleRejectBlog(blog)}
                                     className="text-red-600"
                                   >
-                                    <X className="mr-2 h-4 w-4" />
+                                    <X className="h-4 w-4" />
                                     Reject Blog
                                   </DropdownMenuItem>
                                 </>
@@ -344,12 +344,12 @@ export default function BlogsPage() {
                                   <DropdownMenuItem
                                     onClick={() => handleViewBlog(blog)}
                                   >
-                                    <Eye className="mr-2 h-4 w-4" />
+                                    <Eye className="h-4 w-4" />
                                     View Details
                                   </DropdownMenuItem>
                                   <DropdownMenuItem asChild>
                                     <Link href={`/blogs/edit/${blog.id}`}>
-                                      <Edit className="mr-2 h-4 w-4" />
+                                      <Edit className="h-4 w-4" />
                                       Edit Blog
                                     </Link>
                                   </DropdownMenuItem>
@@ -357,7 +357,7 @@ export default function BlogsPage() {
                                     className="text-red-600"
                                     onClick={() => handleDeleteBlog(blog)}
                                   >
-                                    <Trash2 className="mr-2 h-4 w-4" />
+                                    <Trash2 className="h-4 w-4" />
                                     Delete
                                   </DropdownMenuItem>
                                 </>
@@ -397,7 +397,7 @@ export default function BlogsPage() {
                       </p>
                       <Link href="/blogs/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Create your first blog
                         </Button>
                       </Link>

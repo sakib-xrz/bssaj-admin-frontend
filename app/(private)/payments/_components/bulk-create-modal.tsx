@@ -136,7 +136,7 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
           {/* Payment Month */}
           <div className="space-y-2">
             <Label htmlFor="payment_month" className="flex items-center">
-              <Calendar className="w-4 h-4 mr-2" />
+              <Calendar className="w-4 h-4" />
               Payment Month *
             </Label>
             <Input
@@ -159,7 +159,7 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
           {/* Amount */}
           <div className="space-y-2">
             <Label htmlFor="amount" className="flex items-center">
-              <DollarSign className="w-4 h-4 mr-2" />
+              <DollarSign className="w-4 h-4" />
               Monthly Amount *
             </Label>
             <Input
@@ -181,7 +181,7 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
           {/* Agency Selection */}
           <div className="space-y-4">
             <Label className="flex items-center">
-              <Building2 className="w-4 h-4 mr-2" />
+              <Building2 className="w-4 h-4" />
               Agency Selection
             </Label>
 
@@ -270,12 +270,12 @@ export function BulkCreateModal({ isOpen, onClose }: BulkCreateModalProps) {
             >
               {isLoading ? (
                 <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  <Loader2 className="w-4 h-4 animate-spin" />
                   Creating...
                 </>
               ) : (
                 <>
-                  <Plus className="w-4 h-4 mr-2" />
+                  <Plus className="w-4 h-4" />
                   Create Payments
                 </>
               )}

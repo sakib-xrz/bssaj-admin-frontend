@@ -162,7 +162,7 @@ export default function UsersPage() {
           {currentUser?.role === "SUPER_ADMIN" && (
             <Link href="/users/create">
               <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-                <Plus className="w-4 h-4 mr-2" />
+                <Plus className="w-4 h-4" />
                 Add User
               </Button>
             </Link>
@@ -237,7 +237,7 @@ export default function UsersPage() {
                             <DropdownMenuContent align="end">
                               <DropdownMenuItem asChild>
                                 <Link href={`/users/edit/${user.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                   Edit User
                                 </Link>
                               </DropdownMenuItem>
@@ -249,7 +249,7 @@ export default function UsersPage() {
                                 }}
                                 disabled={currentUser?.role === user.role}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete User
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -287,7 +287,7 @@ export default function UsersPage() {
                       </p>
                       <Link href="/users/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Add your first user
                         </Button>
                       </Link>

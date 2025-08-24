@@ -24,7 +24,7 @@ export default function CreateEventPage() {
         <div className="flex flex-col sm:justify-between sm:items-center gap-4">
           <Link href="/events">
             <Button variant="ghost" size="sm">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+              <ArrowLeft className="w-4 h-4" />
               Back to Events
             </Button>
           </Link>

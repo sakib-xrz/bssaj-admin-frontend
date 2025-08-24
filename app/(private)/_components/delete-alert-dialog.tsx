@@ -53,7 +53,7 @@ export function DeleteAlertDialog({
             disabled={isLoading}
             className="bg-red-600 hover:bg-red-700"
           >
-            {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+            {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
             Delete
           </AlertDialogAction>
         </AlertDialogFooter>

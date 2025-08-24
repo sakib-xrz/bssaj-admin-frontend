@@ -142,7 +142,7 @@ export function PaymentViewModal({
             {/* Agency Information */}
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900 flex items-center">
-                <Building2 className="w-4 h-4 mr-2" />
+                <Building2 className="w-4 h-4" />
                 Agency Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
@@ -168,7 +168,7 @@ export function PaymentViewModal({
             {/* Payment Information */}
             <div className="space-y-3">
               <h3 className="font-semibold text-gray-900 flex items-center">
-                <Calendar className="w-4 h-4 mr-2" />
+                <Calendar className="w-4 h-4" />
                 Payment Information
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">
@@ -208,7 +208,7 @@ export function PaymentViewModal({
                 <Separator />
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-900 flex items-center">
-                    <User className="w-4 h-4 mr-2" />
+                    <User className="w-4 h-4" />
                     Approval Information
                   </h3>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pl-6">

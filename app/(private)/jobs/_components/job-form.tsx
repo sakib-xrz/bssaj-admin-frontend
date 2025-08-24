@@ -391,7 +391,7 @@ export function JobForm({ initialData, onSuccess, onCancel }: JobFormProps) {
                       document.getElementById("company_logo")?.click()
                     }
                   >
-                    <Upload className="w-4 h-4 mr-2" />
+                    <Upload className="w-4 h-4" />
                     Upload Company Logo
                   </Button>
                 )}
@@ -621,7 +621,7 @@ export function JobForm({ initialData, onSuccess, onCancel }: JobFormProps) {
               disabled={isLoading}
               className="bg-primary hover:bg-primary/90"
             >
-              {isLoading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
+              {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {isEditing
                 ? isLoading
                   ? "Updating Job..."

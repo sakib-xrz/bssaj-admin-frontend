@@ -160,7 +160,7 @@ export default function NewsPage() {
           </div>
           <Link href="/news/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Create News
             </Button>
           </Link>
@@ -236,12 +236,12 @@ export default function NewsPage() {
                               <DropdownMenuItem
                                 onClick={() => handleViewNews(newsItem)}
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem asChild>
                                 <Link href={`/news/edit/${newsItem.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                   Edit News
                                 </Link>
                               </DropdownMenuItem>
@@ -249,7 +249,7 @@ export default function NewsPage() {
                                 className="text-red-600"
                                 onClick={() => handleDeleteNews(newsItem)}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -287,7 +287,7 @@ export default function NewsPage() {
                       </p>
                       <Link href="/news/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Create your first news
                         </Button>
                       </Link>

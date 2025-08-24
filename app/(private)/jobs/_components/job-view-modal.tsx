@@ -481,7 +481,7 @@ export function JobViewModal({ jobId, isOpen, onClose }: JobViewModalProps) {
                     disabled={isActionLoading}
                     className="text-red-600 border-red-200 hover:bg-red-50"
                   >
-                    <XCircle className="w-4 h-4 mr-2" />
+                    <XCircle className="w-4 h-4" />
                     Reject
                   </Button>
                   <Button
@@ -490,9 +490,9 @@ export function JobViewModal({ jobId, isOpen, onClose }: JobViewModalProps) {
                     className="bg-green-600 hover:bg-green-700"
                   >
                     {isActionLoading && (
-                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      <Loader2 className="w-4 h-4 animate-spin" />
                     )}
-                    <CheckCircle className="w-4 h-4 mr-2" />
+                    <CheckCircle className="w-4 h-4" />
                     Approve Job
                   </Button>
                 </div>

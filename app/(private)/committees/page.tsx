@@ -206,7 +206,7 @@ export default function CommitteesPage() {
           </div>
           <Link href="/committees/create">
             <Button className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
-              <Plus className="w-4 h-4 mr-2" />
+              <Plus className="w-4 h-4" />
               Add Committee Member
             </Button>
           </Link>
@@ -312,12 +312,12 @@ export default function CommitteesPage() {
                               <DropdownMenuItem
                                 onClick={() => handleViewCommittee(committee)}
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem asChild>
                                 <Link href={`/committees/edit/${committee.id}`}>
-                                  <Edit className="mr-2 h-4 w-4" />
+                                  <Edit className="h-4 w-4" />
                                   Edit Member
                                 </Link>
                               </DropdownMenuItem>
@@ -325,7 +325,7 @@ export default function CommitteesPage() {
                                 className="text-red-600"
                                 onClick={() => handleDeleteCommittee(committee)}
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
@@ -364,7 +364,7 @@ export default function CommitteesPage() {
                       </p>
                       <Link href="/committees/create">
                         <Button>
-                          <Plus className="w-4 h-4 mr-2" />
+                          <Plus className="w-4 h-4" />
                           Add your first committee member
                         </Button>
                       </Link>

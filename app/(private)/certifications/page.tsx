@@ -326,7 +326,7 @@ export default function CertificationsPage() {
                                   handleViewCertification(certification)
                                 }
                               >
-                                <Eye className="mr-2 h-4 w-4" />
+                                <Eye className="h-4 w-4" />
                                 View Details
                               </DropdownMenuItem>
                               <DropdownMenuItem
@@ -335,7 +335,7 @@ export default function CertificationsPage() {
                                   handleDeleteCertification(certification)
                                 }
                               >
-                                <Trash2 className="mr-2 h-4 w-4" />
+                                <Trash2 className="h-4 w-4" />
                                 Delete
                               </DropdownMenuItem>
                             </DropdownMenuContent>
