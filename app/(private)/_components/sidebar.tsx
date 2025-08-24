@@ -15,6 +15,7 @@ import {
   Award,
   Image,
   CreditCard,
+  Briefcase,
 } from "lucide-react";
 
 const navigation = [
@@ -24,6 +25,7 @@ const navigation = [
   { name: "Agencies", href: "/agencies", icon: Building2 },
   { name: "Committees", href: "/committees", icon: Crown },
   { name: "Blogs", href: "/blogs", icon: FileText },
+  { name: "Jobs", href: "/jobs", icon: Briefcase },
   { name: "News", href: "/news", icon: Newspaper },
   { name: "Events", href: "/events", icon: Calendar },
   { name: "Banners", href: "/banners", icon: Image },
