@@ -31,6 +31,7 @@ const navigation = [
   { name: "Banners", href: "/banners", icon: Image },
   { name: "Certifications", href: "/certifications", icon: Award },
   { name: "Payments", href: "/payments", icon: CreditCard },
+  { name: "Gallery", href: "/gallery", icon: Image },
 ];
 
 export function SidebarContent() {
