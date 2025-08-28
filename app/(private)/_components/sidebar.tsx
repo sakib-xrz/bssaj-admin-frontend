@@ -16,6 +16,7 @@ import {
   Image,
   CreditCard,
   Briefcase,
+  MessageSquare,
 } from "lucide-react";
 
 const navigation = [
@@ -32,6 +33,7 @@ const navigation = [
   { name: "Certifications", href: "/certifications", icon: Award },
   { name: "Payments", href: "/payments", icon: CreditCard },
   { name: "Gallery", href: "/gallery", icon: Image },
+  { name: "Consultations", href: "/consultations", icon: MessageSquare },
 ];
 
 export function SidebarContent() {

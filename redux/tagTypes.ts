@@ -11,6 +11,7 @@ export const tagTypes = {
   gallery: "gallery",
   certification: "certification",
   payment: "payment",
+  consultation: "consultation",
 };
 
 export const tagTypesList = [
@@ -26,4 +27,5 @@ export const tagTypesList = [
   tagTypes.gallery,
   tagTypes.certification,
   tagTypes.payment,
+  tagTypes.consultation,
 ];
