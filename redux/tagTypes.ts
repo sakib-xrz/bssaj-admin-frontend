@@ -12,6 +12,7 @@ export const tagTypes = {
   certification: "certification",
   payment: "payment",
   consultation: "consultation",
+  scholarship: "scholarship",
 };
 
 export const tagTypesList = [
@@ -28,4 +29,5 @@ export const tagTypesList = [
   tagTypes.certification,
   tagTypes.payment,
   tagTypes.consultation,
+  tagTypes.scholarship,
 ];
