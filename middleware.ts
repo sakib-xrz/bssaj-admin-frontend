@@ -11,7 +11,6 @@ const commonPrivateRoutes = ["/change-password", "/profile"];
 
 const roleBasedRoutes = {
   SUPER_ADMIN: [
-    "/dashboard",
     "/users",
     "/members",
     "/agencies",
@@ -22,7 +21,6 @@ const roleBasedRoutes = {
     "/settings",
   ],
   ADMIN: [
-    "/dashboard",
     "/users",
     "/members",
     "/agencies",
@@ -42,7 +40,7 @@ export function middleware(request: NextRequest) {
     if (!accessToken) {
       return NextResponse.redirect(new URL("/login", request.url));
     }
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/users", request.url));
   }
 
   // Allow public routes and auth routes when no token
@@ -68,7 +66,7 @@ export function middleware(request: NextRequest) {
 
   // Redirect authenticated users away from login pages
   if (AuthRoutes.includes(pathname)) {
-    return NextResponse.redirect(new URL("/dashboard", request.url));
+    return NextResponse.redirect(new URL("/users", request.url));
   }
 
   // Allow common private routes for all authenticated users
@@ -93,7 +91,6 @@ export function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     "/",
-    "/dashboard",
     "/users",
     "/members",
     "/agencies",

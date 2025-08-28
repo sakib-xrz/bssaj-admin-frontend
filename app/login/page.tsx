@@ -38,8 +38,8 @@ export default function LoginPage() {
 
   const formik = useFormik({
     initialValues: {
-      email: "superadmin@bssaj.com",
-      password: "123456",
+      email: "",
+      password: "",
     },
     validationSchema: loginSchema,
     onSubmit: async (values) => {
@@ -51,7 +51,7 @@ export default function LoginPage() {
 
         toast.success("Logged in successfully");
 
-        const redirectUrl = searchParams.get("next") || "/dashboard";
+        const redirectUrl = searchParams.get("next") || "/users";
 
         setTimeout(() => {
           window.location.href = redirectUrl;

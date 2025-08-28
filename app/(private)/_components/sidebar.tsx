@@ -4,7 +4,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import {
-  LayoutDashboard,
   Users,
   UserCheck,
   Building2,
@@ -21,7 +20,6 @@ import {
 } from "lucide-react";
 
 const navigation = [
-  { name: "Dashboard", href: "/dashboard", icon: LayoutDashboard },
   { name: "Users", href: "/users", icon: Users },
   { name: "Members", href: "/members", icon: UserCheck },
   { name: "Agencies", href: "/agencies", icon: Building2 },

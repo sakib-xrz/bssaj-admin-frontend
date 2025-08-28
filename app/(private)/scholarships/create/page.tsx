@@ -3,6 +3,9 @@
 import { useRouter } from "next/navigation";
 import { ScholarshipForm } from "@/app/(private)/scholarships/_components/scholarship-form";
 import Container from "@/components/shared/container";
+import { Button } from "@/components/ui/button";
+import { ArrowLeft } from "lucide-react";
+import Link from "next/link";
 
 export default function CreateScholarshipPage() {
   const router = useRouter();
@@ -18,11 +21,19 @@ export default function CreateScholarshipPage() {
   return (
     <Container>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Create Scholarship
-          </h1>
-          <p className="text-gray-600">Add a new scholarship opportunity</p>
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
+          <Link href="/scholarships">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Scholarships
+            </Button>
+          </Link>
+          <div className="sm:text-center">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Create Scholarship
+            </h1>
+            <p className="text-gray-600">Add a new scholarship opportunity</p>
+          </div>
         </div>
 
         <ScholarshipForm onSuccess={handleSuccess} onCancel={handleCancel} />

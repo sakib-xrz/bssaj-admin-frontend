@@ -7,7 +7,9 @@ import Container from "@/components/shared/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface EditBannerPageProps {
   params: {
@@ -98,9 +100,17 @@ export default function EditBannerPage({ params }: EditBannerPageProps) {
   return (
     <Container>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Banner</h1>
-          <p className="text-gray-600">Update banner information</p>
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
+          <Link href="/banners">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Banners
+            </Button>
+          </Link>
+          <div className="sm:text-center">
+            <h1 className="text-3xl font-bold text-gray-900">Edit Banner</h1>
+            <p className="text-gray-600">Update banner information</p>
+          </div>
         </div>
 
         <BannerForm

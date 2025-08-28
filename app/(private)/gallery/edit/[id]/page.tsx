@@ -6,8 +6,10 @@ import Container from "@/components/shared/container";
 import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
 import { GalleryForm } from "@/app/(private)/gallery/_components/gallery-form";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface EditGalleryPageProps {
   params: {
@@ -103,11 +105,19 @@ export default function EditGalleryPage({ params }: EditGalleryPageProps) {
   return (
     <Container>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">
-            Edit Gallery Item
-          </h1>
-          <p className="text-gray-600">Update gallery item information</p>
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
+          <Link href="/gallery">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Gallery
+            </Button>
+          </Link>
+          <div className="sm:text-center">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Edit Gallery Item
+            </h1>
+            <p className="text-gray-600">Update gallery item information</p>
+          </div>
         </div>
 
         <GalleryForm

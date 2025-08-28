@@ -290,7 +290,7 @@ export default function GalleryPage() {
                               <DropdownMenuItem asChild>
                                 <Link href={`/gallery/edit/${galleryItem.id}`}>
                                   <Edit className="h-4 w-4" />
-                                  Edit Gallery Item
+                                  Edit Item
                                 </Link>
                               </DropdownMenuItem>
                               <DropdownMenuItem

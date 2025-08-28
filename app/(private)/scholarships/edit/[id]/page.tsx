@@ -6,7 +6,9 @@ import Container from "@/components/shared/container";
 import { useGetSingleScholarshipQuery } from "@/redux/features/scholarship/scholarshipApi";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Alert, AlertDescription } from "@/components/ui/alert";
-import { AlertCircle } from "lucide-react";
+import { AlertCircle, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import Link from "next/link";
 
 interface EditScholarshipPageProps {
   params: {
@@ -68,9 +70,19 @@ export default function EditScholarshipPage({
   return (
     <Container>
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Edit Scholarship</h1>
-          <p className="text-gray-600">Update scholarship information</p>
+        <div className="flex flex-col sm:justify-between sm:items-center gap-4">
+          <Link href="/scholarships">
+            <Button variant="ghost" size="sm">
+              <ArrowLeft className="w-4 h-4" />
+              Back to Scholarships
+            </Button>
+          </Link>
+          <div className="sm:text-center">
+            <h1 className="text-3xl font-bold text-gray-900">
+              Edit Scholarship
+            </h1>
+            <p className="text-gray-600">Update scholarship information</p>
+          </div>
         </div>
 
         <ScholarshipForm
